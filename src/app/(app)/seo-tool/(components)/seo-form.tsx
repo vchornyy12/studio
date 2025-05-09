@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { optimizeSeoText } from "@/ai/flows/optimize-seo-text"; // This is a server action if 'use server' is at top of file
+import { optimizeSeoText } from "@/ai/flows/optimize-seo-text";
 import type { OptimizeSeoTextInput, OptimizeSeoTextOutput } from "@/ai/flows/optimize-seo-text";
 
 import { Button } from "@/components/ui/button";
@@ -23,19 +23,6 @@ const seoFormSchema = z.object({
 });
 
 type SeoFormValues = z.infer<typeof seoFormSchema>;
-
-// This function will be a server action
-async function analyzeSeoContent(data: OptimizeSeoTextInput): Promise<OptimizeSeoTextOutput> {
-  "use server";
-  try {
-    return await optimizeSeoText(data);
-  } catch (error) {
-    console.error("Error in AI SEO analysis:", error);
-    // Simulate a more specific error structure if needed, or throw a generic one
-    throw new Error("Failed to analyze SEO content due to an internal server error.");
-  }
-}
-
 
 export function SeoForm() {
   const [isPending, startTransition] = useTransition();
@@ -55,10 +42,11 @@ export function SeoForm() {
     setResult(null);
     startTransition(async () => {
       try {
-        const analysisResult = await analyzeSeoContent(data);
+        const analysisResult = await optimizeSeoText(data);
         setResult(analysisResult);
       } catch (e: any) {
-        setError(e.message || "An unexpected error occurred.");
+        console.error("Error in AI SEO analysis:", e);
+        setError(e.message || "An unexpected error occurred during SEO analysis.");
       }
     });
   };

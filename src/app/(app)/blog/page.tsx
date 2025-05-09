@@ -31,7 +31,7 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
       content, 
       cover_image, 
       published,
-      user_id ( id, name, email, avatar_url )
+      user_id ( id, name, avatar_url, email )
     `) 
     .eq("published", true) 
     .order("created_at", { ascending: false });
@@ -45,31 +45,29 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
     console.warn("[BlogPage] No data returned for published posts, but no explicit error. This might indicate RLS issues or no published posts.");
     return { posts: [], error: null }; // No error, but no data
   }
-
+  
   const fetchedPosts = data?.map((p: any) => {
-    const authorData = p.user_id; // This should be an object if the join worked, or null/string(uuid)
+    const authorData = p.user_id; 
 
-    if (authorData && typeof authorData !== 'object' && typeof authorData !== 'string') {
-        console.warn(`[BlogPage] Unexpected authorData type for post ID ${p.id}:`, typeof authorData, authorData);
-    }
-    
-    let authorIdToUse: string;
+    let author: User;
+
     if (authorData && typeof authorData === 'object' && authorData.id) {
-        authorIdToUse = authorData.id;
-    } else if (typeof authorData === 'string') {
-        // If authorData is just the UUID string (e.g., relationship didn't expand)
-        authorIdToUse = authorData;
-        console.warn(`[BlogPage] Author data for post ID ${p.id} was a string (UUID), not an expanded object. Fallback for author details will be used. This might indicate RLS issues on the 'users' or 'profiles' table for anonymous users.`);
+      author = {
+        id: authorData.id,
+        name: authorData.name || authorData.email?.split('@')[0] || "Anonymous",
+        email: authorData.email,
+        avatarUrl: authorData.avatar_url,
+      };
     } else {
-        authorIdToUse = 'unknown_user_id';
+      // Fallback if user_id is not expanded (e.g. due to RLS or if it's just a UUID string)
+      // This situation should ideally be avoided by ensuring RLS allows fetching related user data.
+      console.warn(`[BlogPage] Author data for post ID ${p.id} was not fully resolved. Displaying as Anonymous or using placeholder. Author data received:`, authorData);
+      author = {
+        id: typeof authorData === 'string' ? authorData : p.user_id || 'unknown_user_id',
+        name: "Anonymous", 
+        // email and avatarUrl would be undefined or null here
+      };
     }
-
-    const authorName = (authorData && typeof authorData === 'object' ? authorData.name : null) || 
-                       (authorData && typeof authorData === 'object' ? authorData.email : null) || 
-                       "Anonymous";
-    const authorEmail = (authorData && typeof authorData === 'object' ? authorData.email : null);
-    const authorAvatar = (authorData && typeof authorData === 'object' ? authorData.avatar_url : null);
-
 
     return {
       id: p.id,
@@ -81,12 +79,7 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
       published: p.published,
       createdAt: p.created_at,
       updatedAt: p.updated_at,
-      author: {
-        id: authorIdToUse,
-        name: authorName,
-        email: authorEmail,
-        avatarUrl: authorAvatar,
-      } as User,
+      author: author,
     } as Post;
   }) || [];
   
@@ -133,4 +126,3 @@ export default async function BlogPage() {
 export const revalidate = 3600; // Revalidate every hour
 // For more immediate updates on new posts, consider on-demand revalidation via a webhook if your CMS supports it.
 // Or reduce revalidate time if frequent updates are expected and acceptable for build times/costs.
-```

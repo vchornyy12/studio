@@ -1,10 +1,10 @@
 // src/components/blog/post-content.tsx
-import type { Post } from "@/lib/types";
+import type { Post } from "@/lib/types"; // Use Post type from lib/types
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge"; // Tags removed
 import { format } from 'date-fns';
-import { CalendarDays, UserCircle } from "lucide-react";
+import { CalendarDays } from "lucide-react"; // UserCircle not used currently
 
 type PostContentProps = {
   post: Post;
@@ -19,10 +19,10 @@ function renderHtmlContent(htmlString: string) {
 export function PostContent({ post }: PostContentProps) {
   return (
     <article className="py-8 md:py-12">
-      {post.imageUrl && (
+      {post.cover_image && (
         <div className="relative aspect-[16/7] w-full mb-8 rounded-lg overflow-hidden shadow-xl">
           <Image
-            src={post.imageUrl}
+            src={post.cover_image}
             alt={post.title}
             layout="fill"
             objectFit="cover"
@@ -40,9 +40,9 @@ export function PostContent({ post }: PostContentProps) {
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               <AvatarImage src={post.author.avatarUrl} alt={post.author.name} data-ai-hint="author photo"/>
-              <AvatarFallback>{post.author.name.substring(0,1)}</AvatarFallback>
+              <AvatarFallback>{post.author.name?.substring(0,1).toUpperCase() || "A"}</AvatarFallback>
             </Avatar>
-            <span>{post.author.name}</span>
+            <span>{post.author.name || "Anonymous"}</span>
           </div>
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
@@ -57,28 +57,28 @@ export function PostContent({ post }: PostContentProps) {
           </div>
           */}
         </div>
-        {post.tags && post.tags.length > 0 && (
+        {/* Tags functionality removed based on new schema */}
+        {/* {post.tags && post.tags.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {post.tags.map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs font-medium">{tag}</Badge>
             ))}
           </div>
-        )}
+        )} */}
       </header>
       
       {/* Render post content */}
-      {/* This assumes post.content is HTML. If it's Markdown, you'd use a Markdown renderer here. */}
       {renderHtmlContent(post.content)}
 
       <footer className="mt-12 border-t pt-8">
         <div className="flex items-center">
           <Avatar className="h-12 w-12 mr-4">
              <AvatarImage src={post.author.avatarUrl} alt={post.author.name} data-ai-hint="author headshot"/>
-            <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>{post.author.name?.substring(0, 2).toUpperCase() || "A"}</AvatarFallback>
           </Avatar>
           <div>
             <p className="text-sm text-muted-foreground">Written by</p>
-            <p className="text-lg font-semibold text-foreground">{post.author.name}</p>
+            <p className="text-lg font-semibold text-foreground">{post.author.name || "Anonymous"}</p>
             {/* Placeholder for author bio
             <p className="text-sm text-muted-foreground mt-1">
               Dr. Ava Jensen is a lead AI researcher at AI Nexus, specializing in NLP and machine learning applications.

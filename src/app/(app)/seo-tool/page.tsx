@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function SeoToolPage() {
   return (
-    <div className="py-12 md:py-20 bg-gradient-to-br from-background to-secondary/20">
+    <div className="py-12 md:py-20">
       <div className="container mx-auto px-4 md:px-6 max-w-3xl">
         <header className="text-center mb-12 md:mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             SEO Optimization Tool
           </h1>
           <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">

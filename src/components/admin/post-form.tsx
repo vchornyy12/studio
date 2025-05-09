@@ -1,103 +1,99 @@
-// src/components/admin/post-form.tsx
 "use client";
 
-import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import type { Post, User } from "@/lib/types";
-import { createPost, updatePost, getAuthors } from "@/lib/blog-data"; // Using mock data
-import { Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Check, Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
-const postFormSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters").max(150, "Title cannot exceed 150 characters"),
-  slug: z.string().min(3, "Slug must be at least 3 characters").max(150, "Slug cannot exceed 150 characters")
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens"),
-  excerpt: z.string().min(20, "Excerpt must be at least 20 characters").max(300, "Excerpt cannot exceed 300 characters"),
-  content: z.string().min(100, "Content must be at least 100 characters"),
-  imageUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  tags: z.string().optional().describe("Comma-separated tags"),
-  authorId: z.string().min(1, "Author is required"),
-  seoTitle: z.string().max(70, "SEO Title should not exceed 70 characters").optional(),
-  seoDescription: z.string().max(160, "SEO Description should not exceed 160 characters").optional(),
+// Function to generate a slug (can be moved to utils if used elsewhere)
+const generateSlug = (title: string): string => {
+  if (!title) return "";
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\W-]+/g, "-") // Replace spaces and non-word chars with a single dash
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing dashes
+};
+
+export const PostFormSchema = z.object({
+  title: z.string().min(3, { message: "Title must be at least 3 characters long." }).max(200),
+  slug: z.string().min(3, { message: "Slug must be at least 3 characters long." }).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { message: "Slug must be a valid URL slug (e.g., 'my-post-title')."}),
+  content: z.string().min(10, { message: "Content is too short." }),
+  summary: z.string().min(10, { message: "Summary must be at least 10 characters."}).max(300, { message: "Summary cannot exceed 300 characters."}),
+  cover_image: z.string().url({ message: "Cover image must be a valid URL."}).optional().or(z.literal("")),
+  published: z.boolean().default(false),
 });
 
-type PostFormValues = z.infer<typeof postFormSchema>;
+export type PostFormValues = z.infer<typeof PostFormSchema>;
 
 interface PostFormProps {
-  post?: Post; // For editing existing post
-  authors: User[];
+  onSubmit: (values: PostFormValues) => Promise<void>;
+  initialData?: Partial<PostFormValues>; // For editing
+  isLoading?: boolean;
+  submitButtonText?: string; // This prop might be overridden by internal logic now
 }
 
-export function PostForm({ post, authors }: PostFormProps) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+export function PostForm({
+  onSubmit,
+  initialData,
+  isLoading = false,
+  // submitButtonText is determined by 'published' state now
+}: PostFormProps) {
 
   const form = useForm<PostFormValues>({
-    resolver: zodResolver(postFormSchema),
-    defaultValues: {
-      title: post?.title || "",
-      slug: post?.slug || "",
-      excerpt: post?.excerpt || "",
-      content: post?.content || "",
-      imageUrl: post?.imageUrl || "",
-      tags: post?.tags?.join(", ") || "",
-      authorId: post?.author.id || (authors.length > 0 ? authors[0].id : ""),
-      seoTitle: post?.seoTitle || "",
-      seoDescription: post?.seoDescription || "",
+    resolver: zodResolver(PostFormSchema),
+    defaultValues: initialData || {
+      title: "",
+      slug: "",
+      content: "",
+      summary: "",
+      cover_image: "",
+      published: false,
     },
+    mode: "onChange", // Validate on change for better UX
   });
 
-  const onSubmit: SubmitHandler<PostFormValues> = (data) => {
-    startTransition(async () => {
-      try {
-        const postDataPayload = {
-          ...data,
-          tags: data.tags ? data.tags.split(",").map(tag => tag.trim()).filter(tag => tag) : [],
-        };
+  const watchedTitle = form.watch("title");
+  const isPublished = form.watch("published");
 
-        if (post) { // Editing existing post
-          const updatedPost = await updatePost(post.id, postDataPayload);
-          if (updatedPost) {
-            toast({ title: "Post Updated", description: `"${updatedPost.title}" has been successfully updated.` });
-            router.push(`/admin/posts`); // Or to the post view page
-            router.refresh();
-          } else {
-            toast({ title: "Error", description: "Failed to update post.", variant: "destructive" });
-          }
-        } else { // Creating new post
-          const newPost = await createPost(postDataPayload);
-          toast({ title: "Post Created", description: `"${newPost.title}" has been successfully created.` });
-          router.push(`/admin/posts`);
-          router.refresh();
-        }
-      } catch (error) {
-        console.error("Failed to save post:", error);
-        toast({ title: "Error", description: "An unexpected error occurred while saving the post.", variant: "destructive" });
-      }
-    });
-  };
+  useEffect(() => {
+    if (watchedTitle && !form.getValues("slug") && !initialData?.slug) { 
+      form.setValue("slug", generateSlug(watchedTitle), { shouldValidate: true });
+    }
+  }, [watchedTitle, form, initialData?.slug]);
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData, form]);
+
+  const currentSubmitButtonText = isPublished
+    ? (isLoading ? "Publishing..." : "Update Published Post")
+    : (isLoading ? "Saving Draft..." : "Save Draft & Preview");
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>{post ? "Edit Post" : "Create New Post"}</CardTitle>
-            <CardDescription>
-              {post ? "Modify the details of your blog post." : "Fill in the details for your new blog post."}
-            </CardDescription>
+            <CardTitle>Post Details</CardTitle>
+            <CardDescription>Fill in the main content for your blog post.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <FormField
@@ -105,126 +101,110 @@ export function PostForm({ post, authors }: PostFormProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl><Input placeholder="Enter post title" {...field} /></FormControl>
+                  <FormLabel>Title <span className="text-destructive">*</span></FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Awesome Blog Post Title" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl><Input placeholder="e.g., my-awesome-post" {...field} /></FormControl>
-                  <FormDescription>URL-friendly version of the title (lowercase, hyphens for spaces).</FormDescription>
+                  <FormLabel>Slug <span className="text-destructive">*</span></FormLabel>
+                  <FormControl>
+                    <Input placeholder="your-awesome-blog-post-title" {...field} onChange={(e) => field.onChange(generateSlug(e.target.value))} />
+                  </FormControl>
+                  <FormDescription>The URL-friendly version of the title. Auto-generated but can be edited.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="authorId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Author</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an author" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {authors.map(author => (
-                        <SelectItem key={author.id} value={author.id}>
-                          {author.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="excerpt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Excerpt</FormLabel>
-                  <FormControl><Textarea placeholder="Short summary of the post" rows={3} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Content (Markdown/HTML)</FormLabel>
-                  <FormControl><Textarea placeholder="Full content of the post. Use Markdown or HTML." rows={15} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (Optional)</FormLabel>
-                  <FormControl><Input type="url" placeholder="https://example.com/image.jpg" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags (Comma-separated)</FormLabel>
-                  <FormControl><Input placeholder="e.g., AI, Technology, Guide" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <CardTitle className="text-lg pt-4 border-t">SEO Settings (Optional)</CardTitle>
-             <FormField
-              control={form.control}
-              name="seoTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SEO Title</FormLabel>
-                  <FormControl><Input placeholder="Custom title for search engines" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="seoDescription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SEO Meta Description</FormLabel>
-                  <FormControl><Textarea placeholder="Custom description for search engines" rows={2} {...field} /></FormControl>
+                  <FormLabel>Content <span className="text-destructive">*</span></FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Start writing your masterpiece here... Supports Markdown." rows={15} {...field} />
+                  </FormControl>
+                  <FormDescription>Tip: You can use Markdown for formatting.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {post ? "Save Changes" : "Publish Post"}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()} className="ml-2">
-              Cancel
-            </Button>
-          </CardFooter>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Post Excerpt & Image</CardTitle>
+            <CardDescription>Provide a summary and an optional cover image for your post.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="summary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Summary / Excerpt <span className="text-destructive">*</span></FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Short, compelling summary for post previews (max 300 chars)." rows={3} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cover_image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cover Image URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://example.com/your-image.jpg" {...field} />
+                  </FormControl>
+                  <FormDescription>Link to the main image for this post.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        
+        <FormField
+            control={form.control}
+            name="published"
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm bg-muted/30">
+                <div className="space-y-0.5">
+                    <FormLabel className="text-base">Publish Status</FormLabel>
+                    <FormDescription>
+                    Toggle on to make the post live, or off to keep it as a draft.
+                    </FormDescription>
+                </div>
+                <FormControl>
+                    <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    />
+                </FormControl>
+                </FormItem>
+            )}
+        />
+
+        <div className="flex justify-end pt-4">
+          <Button type="submit" disabled={isLoading} className="min-w-[180px]">
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+            {currentSubmitButtonText}
+          </Button>
+        </div>
       </form>
     </Form>
   );

@@ -5,22 +5,20 @@ export type Post = {
   id: string;
   slug: string;
   title: string;
-  excerpt: string;
+  summary: string; // Replaces excerpt and seo_description
   content: string; // Markdown or HTML content
-  imageUrl?: string;
+  cover_image?: string; // Replaces imageUrl and featured_image_url
   author: User;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-  tags?: string[];
-  seoTitle?: string;
-  seoDescription?: string;
+  published: boolean; // Replaces status and published_at for publication state
   // Add any other relevant fields like view count, likes, etc.
 };
 
 // Represents a user (author or general user)
 export type User = {
   id: string;
-  name: string;
+  name: string; // Should be populated, e.g., full_name or fallback to email/anonymous
   avatarUrl?: string;
   email?: string; // May not always be public
   // Add other user-related fields, e.g., bio, role
@@ -50,3 +48,4 @@ export type SeoOptimizationResult = {
   suggestions: string;
   seoScore: number;
 };
+

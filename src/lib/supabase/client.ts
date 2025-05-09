@@ -1,26 +1,31 @@
 // src/lib/supabase/client.ts
-// import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient } from '@supabase/ssr';
 
-// export function createSupabaseBrowserClient() {
-//   return createBrowserClient(
-//     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-//     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-//   );
-// }
+export function createSupabaseBrowserClient() {
+  // Check if environment variables are set
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.error(
+      'Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY) are not set. ' +
+      'The Supabase client will not be initialized. Please ensure these are set in your .env.local file.'
+    );
+    // Return a mock client or throw an error, depending on desired behavior for unconfigured state
+    // For now, returning a basic object that won't throw if simple properties are accessed (like auth)
+    // but will not be functional.
+    return {
+      auth: {
+        onAuthStateChange: () => ({ data: { subscription: null }, error: null }), // Mock onAuthStateChange
+        // Add other mock methods as needed to prevent errors in components if Supabase isn't configured
+      },
+      // Add other Supabase services mocks if necessary
+    } as any; // Type assertion to satisfy SupabaseClient type partially
+  }
 
-// Placeholder: Actual Supabase initialization would require environment variables
-// and the @supabase/ssr package. For now, this file serves as a structural placeholder.
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
-console.warn(
-  "Supabase client (browser) not fully configured. Using placeholder. " + 
-  "Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables and uncomment the code."
-);
-
-// Example of how you might export a client instance if not using a function:
+// Optional: Export a singleton instance if preferred in some parts of your app
 // const supabase = createSupabaseBrowserClient();
 // export default supabase;
-
-// For now, returning a mock or null to avoid build errors if imported elsewhere.
-export function createSupabaseBrowserClient() {
-  return null;
-}

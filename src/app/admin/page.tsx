@@ -1,84 +1,66 @@
 // src/app/admin/page.tsx
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, BarChart3, PlusCircle } from "lucide-react";
+import { getUser } from "@/lib/supabase/server"; // For server-side user fetching
 import Link from "next/link";
-import { getPosts } from "@/lib/blog-data"; // Using mock data
-import type { Metadata } from 'next';
+import { Button } from "@/components/ui/button";
+import { FileText, PlusCircle } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: 'Admin Dashboard | AI Nexus',
-  description: 'Manage your AI Nexus application from the admin dashboard.',
+export const metadata = {
+  title: "Admin Dashboard | AI Nexus",
 };
 
-
 export default async function AdminDashboardPage() {
-  // Placeholder data fetching - replace with actual data sources
-  const posts = await getPosts();
-  const totalPosts = posts.length;
-  const totalUsers = 1; // Placeholder
-  const siteVisits = 1234; // Placeholder
+  const user = await getUser(); // Fetch user server-side for initial render or specific checks
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-        <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-          <Link href="/admin/posts/new">
-            <PlusCircle className="mr-2 h-4 w-4" /> Create New Post
-          </Link>
-        </Button>
-      </div>
+    <div className="space-y-8">
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          Admin Dashboard
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Welcome, {user?.email || "Admin"}! Manage your site content and settings here.
+        </p>
+      </header>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-            <FileText className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalPosts}</div>
-            <p className="text-xs text-muted-foreground">
-              Published blog articles
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Registered Users</CardTitle>
-            <Users className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{totalUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              (Placeholder data)
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Site Visits (Last 30d)</CardTitle>
-            <BarChart3 className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{siteVisits.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              (Placeholder data)
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="mt-8">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Overview of recent actions and updates. (Placeholder)</CardDescription>
+            <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">Blog Posts</CardTitle>
+                <FileText className="h-6 w-6 text-primary" />
+            </div>
+            <CardDescription>Manage all your blog articles.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">No recent activity to display yet.</p>
-            {/* In a real app, list recent posts, comments, user sign-ups etc. */}
+            {/* Add some quick stats or info here if available */}
+            <p className="text-sm text-muted-foreground mb-4">View, edit, and create new posts.</p>
+            <div className="flex gap-2">
+                <Button asChild>
+                    <Link href="/admin/posts">View Posts</Link>
+                </Button>
+                <Button asChild variant="outline">
+                    <Link href="/admin/posts/new"><PlusCircle className="mr-2 h-4 w-4"/> New Post</Link>
+                </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Add more cards for other admin sections as needed */}
+        {/* Example:
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-xl">Site Settings</CardTitle>
+            <CardDescription>Configure global site settings.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="secondary">
+                <Link href="/admin/settings">Go to Settings</Link>
+            </Button>
+          </CardContent>
+        </Card>
+        */}
       </div>
-    </>
+    </div>
   );
 }

@@ -8,10 +8,11 @@
 
 ## Style Guidelines:
 
-- Primary color: Deep blue (#0D47A1) for a professional and trustworthy feel.
-- Secondary color: Light gray (#EEEEEE) for clean backgrounds and text contrast.
-- Accent color: Teal (#26A69A) to highlight key sections and CTAs.
+- Primary color: Firebase Orange (#F57C00) for a vibrant and energetic feel.
+- Secondary color: Light Gray (#F1F3F4) for clean backgrounds and text contrast.
+- Accent color: Google Blue (#1A73E8) to highlight key sections and CTAs.
+- Gradients: Utilize gradients incorporating primary and accent colors to create depth and visual interest in key sections like the hero and CTA areas.
 - Clean and modern sans-serif typography for headlines and body text to ensure readability and a contemporary look.
 - Simple, outlined icons to represent services and expertise in a modern, minimalist style.
 - Grid-based layout for organized content presentation and responsive design across devices.
-- Subtle animations and transitions for a smooth and engaging user experience.
+- Animations and Transitions: Employ subtle animations (e.g., fade-in, slide-up) for section loading and interactive elements to enhance user engagement. Hover and focus states should provide clear visual feedback.

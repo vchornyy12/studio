@@ -8,96 +8,96 @@ body {
 
 @layer base {
   :root {
-    --background: 210 20% 98%; /* Light Grayish Blue - close to #EEEEEE but with a hint of blue */
-    --foreground: 221 39% 28%; /* Dark Blue - for text */
+    --background: 210 17% 95%; /* Light Gray (Firebase Inspired) */
+    --foreground: 220 25% 25%; /* Dark Gray for text */
 
-    --muted: 210 30% 90%;
-    --muted-foreground: 220 25% 45%;
+    --muted: 210 17% 88%; /* Lighter Gray */
+    --muted-foreground: 220 25% 45%; /* Medium Gray for muted text */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 221 39% 28%;
+    --popover: 210 17% 95%; /* Light Gray (Firebase Inspired) */
+    --popover-foreground: 220 25% 25%; /* Dark Gray for text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 221 39% 28%;
+    --card: 210 17% 95%; /* Light Gray (Firebase Inspired) */
+    --card-foreground: 220 25% 25%; /* Dark Gray for text */
 
-    --border: 210 20% 85%;
-    --input: 210 20% 90%;
+    --border: 210 17% 85%; /* Medium Gray for borders */
+    --input: 210 17% 90%; /* Slightly darker Light Gray for inputs */
 
-    --primary: 221 83% 34%; /* Deep Blue - #0D47A1 */
-    --primary-foreground: 0 0% 98%;
+    --primary: 29 100% 48%; /* Firebase Orange */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 0 0% 93%; /* Light Gray - #EEEEEE */
-    --secondary-foreground: 221 39% 28%;
+    --secondary: 210 17% 90%; /* Slightly darker Light Gray */
+    --secondary-foreground: 220 25% 25%; /* Dark Gray for text */
 
-    --accent: 174 63% 40%; /* Teal - #26A69A */
-    --accent-foreground: 0 0% 98%;
+    --accent: 217 82% 50%; /* Google Blue */
+    --accent-foreground: 0 0% 100%; /* White */
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%; /* Standard Red */
+    --destructive-foreground: 0 0% 98%; /* Light Gray/White */
 
-    --ring: 174 63% 40%; /* Accent color for rings */
+    --ring: 217 82% 50%; /* Google Blue for focus rings */
 
     --radius: 0.5rem;
 
-    /* Custom variables for sidebar if needed, can be refined later */
-    --sidebar-background: 221 30% 15%; /* Darker shade of primary */
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 174 63% 40%; /* Accent for sidebar highlights */
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 221 83% 40%; /* Primary slightly lighter for accents */
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 221 30% 25%;
-    --sidebar-ring: 174 63% 40%;
+    /* Sidebar Colors - Light Theme */
+    --sidebar-background: 220 15% 20%; /* Dark Neutral Gray */
+    --sidebar-foreground: 0 0% 90%; /* Light Gray text */
+    --sidebar-primary: 29 100% 48%; /* Firebase Orange */
+    --sidebar-primary-foreground: 0 0% 100%; /* White */
+    --sidebar-accent: 217 82% 50%; /* Google Blue */
+    --sidebar-accent-foreground: 0 0% 100%; /* White */
+    --sidebar-border: 220 15% 30%; /* Slightly lighter Dark Neutral Gray */
+    --sidebar-ring: 29 100% 48%; /* Firebase Orange */
 
-    --chart-1: 221 83% 50%;
-    --chart-2: 174 63% 50%;
-    --chart-3: 210 40% 50%;
-    --chart-4: 0 70% 60%;
-    --chart-5: 30 70% 60%;
+    --chart-1: 29 100% 50%; /* Firebase Orange variant */
+    --chart-2: 217 82% 55%; /* Google Blue variant */
+    --chart-3: 210 40% 50%; /* Neutral Blue/Gray */
+    --chart-4: 0 70% 60%; /* Reddish tone */
+    --chart-5: 30 70% 60%; /* Orangish tone */
   }
 
   .dark {
-    --background: 221 30% 12%; /* Dark Blue background */
-    --foreground: 0 0% 95%; /* Light Gray text */
+    --background: 20 6% 10%; /* Very Dark Desaturated Orange/Brown (Firebase Dark Inspired) */
+    --foreground: 30 8% 85%; /* Light Off-White */
 
-    --muted: 221 30% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 20 6% 25%; /* Darker Grayish Brown */
+    --muted-foreground: 30 8% 60%; /* Medium-Light Gray */
 
-    --popover: 221 30% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 20 6% 12%; /* Slightly Lighter Dark Brown/Gray */
+    --popover-foreground: 30 8% 85%; /* Light Off-White */
 
-    --card: 221 30% 15%;
-    --card-foreground: 0 0% 95%;
+    --card: 20 6% 12%; /* Slightly Lighter Dark Brown/Gray */
+    --card-foreground: 30 8% 85%; /* Light Off-White */
 
-    --border: 221 30% 25%;
-    --input: 221 30% 22%;
+    --border: 20 6% 20%; /* Medium Dark Gray/Brown for borders */
+    --input: 20 6% 18%; /* Dark Gray/Brown for inputs */
 
-    --primary: 174 63% 45%; /* Teal as primary in dark mode for pop */
-    --primary-foreground: 221 30% 10%;
+    --primary: 29 90% 55%; /* Brighter Firebase Orange */
+    --primary-foreground: 20 6% 10%; /* Very Dark for text on orange */
 
-    --secondary: 221 30% 25%; /* Darker shade for secondary elements */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 20 6% 15%; /* Darker Gray/Brown */
+    --secondary-foreground: 30 8% 85%; /* Light Off-White */
 
-    --accent: 221 83% 50%; /* Original primary blue as accent in dark mode */
-    --accent-foreground: 0 0% 98%;
+    --accent: 217 75% 60%; /* Brighter Google Blue */
+    --accent-foreground: 0 0% 100%; /* White */
     
-    --destructive: 0 60% 45%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 55%; /* Standard Red (slightly adjusted for dark) */
+    --destructive-foreground: 0 0% 98%; /* Light Gray/White */
 
-    --ring: 174 63% 45%;
+    --ring: 217 75% 60%; /* Brighter Google Blue for focus rings */
 
-    /* Custom variables for sidebar in dark mode */
-    --sidebar-background: 221 30% 10%; 
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 174 63% 45%; 
-    --sidebar-primary-foreground: 221 30% 5%;
-    --sidebar-accent: 221 83% 50%; 
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 221 30% 20%;
-    --sidebar-ring: 174 63% 45%;
+    /* Sidebar Colors - Dark Theme */
+    --sidebar-background: 20 6% 8%; /* Even Darker Desaturated Orange/Brown */
+    --sidebar-foreground: 30 8% 85%; /* Light Off-White */
+    --sidebar-primary: 29 90% 55%; /* Brighter Firebase Orange */
+    --sidebar-primary-foreground: 20 6% 10%; /* Very Dark for text on orange */
+    --sidebar-accent: 217 75% 60%; /* Brighter Google Blue */
+    --sidebar-accent-foreground: 0 0% 100%; /* White */
+    --sidebar-border: 20 6% 15%; /* Darker Gray/Brown */
+    --sidebar-ring: 29 90% 55%; /* Brighter Firebase Orange */
 
-    --chart-1: 174 63% 55%;
-    --chart-2: 221 83% 60%;
+    --chart-1: 29 90% 60%; /* Firebase Orange variant for dark */
+    --chart-2: 217 75% 65%; /* Google Blue variant for dark */
     --chart-3: 210 40% 60%;
     --chart-4: 0 70% 65%;
     --chart-5: 30 70% 65%;

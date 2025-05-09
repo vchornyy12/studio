@@ -178,5 +178,4 @@ export default async function BlogPostPage({ params }: BlogProps) {
 
 // Revalidate this page ISR (Incremental Static Regeneration)
 // Revalidate at most every hour, or on-demand if revalidation is triggered
-export const revalidate = 3600; 
-```
+export const revalidate = 3600;

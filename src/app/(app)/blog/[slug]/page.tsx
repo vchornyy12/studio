@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PostContent } from "@/components/blog/post-content";
 import { notFound } from "next/navigation";
 import type { Metadata, ResolvingMetadata } from 'next';
-import type { Post, User } from "@/lib/types"; // Use Post type from lib/types
+import type { Post, User } from "@/lib/types"; 
 
 interface BlogProps {
   params: { slug: string };
@@ -11,7 +11,10 @@ interface BlogProps {
 
 async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
   const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    console.error(`[BlogSlugPage: ${slug}] Supabase client not available.`);
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -25,21 +28,49 @@ async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
       content, 
       cover_image, 
       published,
-      user_id ( id, name, email, avatar_url )
+      user_id ( id, name, email, avatar_url ) 
     `) 
     .eq("slug", slug)
     .eq("published", true)
     .single();
 
-  if (error || !data) {
-    if (error && error.code !== 'PGRST116') { 
-        console.error(`[BlogSlugPage] Error fetching post by slug (${slug}):`, error);
+  if (error) {
+    if (error.code === 'PGRST116') { // PGRST116: "Query result returned no rows" - expected for not found
+      console.log(`[BlogSlugPage: ${slug}] Post not found or not published (PGRST116).`);
+    } else {
+      console.error(`[BlogSlugPage: ${slug}] Error fetching post by slug. DB Error: ${error.message}`, "Details:", error);
     }
     return null;
   }
   
-  const p = data as any; // p for raw post data
-  const authorData = p.user_id as any;
+  if (!data) {
+    console.warn(`[BlogSlugPage: ${slug}] No data returned for post, but no explicit error. This might indicate RLS issues preventing access.`);
+    return null;
+  }
+  
+  const p = data as any; 
+  const authorData = p.user_id; // This should be an object if the join worked, or null/string(uuid)
+
+  if (authorData && typeof authorData !== 'object' && typeof authorData !== 'string') {
+      console.warn(`[BlogSlugPage: ${slug}] Unexpected authorData type for post ID ${p.id}:`, typeof authorData, authorData);
+  }
+
+  let authorIdToUse: string;
+  if (authorData && typeof authorData === 'object' && authorData.id) {
+      authorIdToUse = authorData.id;
+  } else if (typeof authorData === 'string') {
+      // If authorData is just the UUID string (e.g., relationship didn't expand)
+      authorIdToUse = authorData;
+      console.warn(`[BlogSlugPage: ${slug}] Author data for post ID ${p.id} was a string (UUID), not an expanded object. Fallback for author details will be used. This might indicate RLS issues on the 'users' or 'profiles' table for anonymous users.`);
+  } else {
+      authorIdToUse = 'unknown_user_id';
+  }
+
+  const authorName = (authorData && typeof authorData === 'object' ? authorData.name : null) || 
+                     (authorData && typeof authorData === 'object' ? authorData.email : null) || 
+                     "Anonymous";
+  const authorEmail = (authorData && typeof authorData === 'object' ? authorData.email : null);
+  const authorAvatar = (authorData && typeof authorData === 'object' ? authorData.avatar_url : null);
 
   const post: Post = {
     id: p.id,
@@ -52,11 +83,11 @@ async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
     createdAt: p.created_at,
     updatedAt: p.updated_at,
     author: {
-      id: authorData?.id || 'unknown_user_id',
-      name: authorData?.name || authorData?.email || "Anonymous",
-      email: authorData?.email,
-      avatarUrl: authorData?.avatar_url,
-    },
+      id: authorIdToUse,
+      name: authorName,
+      email: authorEmail,
+      avatarUrl: authorAvatar,
+    } as User,
   };
 
   return post;
@@ -81,14 +112,16 @@ export async function generateMetadata(
   const imageUrl = post.cover_image; 
 
   return {
-    title: pageTitle,
+    title: `${pageTitle} | AI Nexus Blog`, // Added site name for consistency
     description: pageDescription,
     openGraph: {
       title: pageTitle,
       description: pageDescription,
+      url: `/blog/${post.slug}`, // Added canonical URL
       type: 'article',
       publishedTime: post.createdAt || undefined,
-      authors: post.author?.name ? [post.author.name] : undefined,
+      modifiedTime: post.updatedAt || undefined, // Added modified time
+      authors: post.author?.name && post.author.name !== "Anonymous" ? [post.author.name] : undefined,
       images: imageUrl ? [{ url: imageUrl, alt: pageTitle }, ...previousImages] : previousImages,
     },
     twitter: {
@@ -102,20 +135,29 @@ export async function generateMetadata(
 
 export async function generateStaticParams() {
   const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  if (!supabase) {
+    console.error("[BlogSlugPage generateStaticParams] Supabase client not available.");
+    return [];
+  }
 
   const { data: postsData, error } = await supabase
     .from("blog_posts")
     .select("slug")
-    .eq("published", true);
+    .eq("published", true); // Ensure only published posts are pre-rendered
 
-  if (error || !postsData) {
-    console.error("[BlogSlugPage] Error fetching slugs for static generation:", error);
+  if (error) {
+    console.error("[BlogSlugPage generateStaticParams] Error fetching slugs:", error.message);
     return [];
   }
+
+  if (!postsData || postsData.length === 0) {
+    console.warn("[BlogSlugPage generateStaticParams] No published post slugs found for static generation.");
+    return [];
+  }
+
   return postsData.map((post) => ({
     slug: post.slug as string,
-  })).filter(p => p.slug);
+  })).filter(p => p.slug); // Ensure slug is not null/empty
 }
 
 export default async function BlogPostPage({ params }: BlogProps) {
@@ -134,4 +176,7 @@ export default async function BlogPostPage({ params }: BlogProps) {
   );
 }
 
-export const revalidate = 3600;
+// Revalidate this page ISR (Incremental Static Regeneration)
+// Revalidate at most every hour, or on-demand if revalidation is triggered
+export const revalidate = 3600; 
+```

@@ -19,7 +19,6 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
     return { posts: [], error: "Supabase client not available. Check server configuration." };
   }
 
-  // Select new fields, filter by published: true, order by created_at
   const { data, error } = await supabase
     .from("blog_posts") 
     .select(`
@@ -38,12 +37,40 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("[BlogPage] Error fetching published posts from Supabase:", error);
-    return { posts: [], error: "Could not fetch blog posts. Please try again later." };
+    console.error("[BlogPage] Error fetching published posts from Supabase:", error.message, "Details:", error);
+    return { posts: [], error: `Could not fetch blog posts. Database error: ${error.message}. Please try again later.` };
+  }
+
+  if (!data) {
+    console.warn("[BlogPage] No data returned for published posts, but no explicit error. This might indicate RLS issues or no published posts.");
+    return { posts: [], error: null }; // No error, but no data
   }
 
   const fetchedPosts = data?.map((p: any) => {
-    const authorData = p.user_id as any;
+    const authorData = p.user_id; // This should be an object if the join worked, or null/string(uuid)
+
+    if (authorData && typeof authorData !== 'object' && typeof authorData !== 'string') {
+        console.warn(`[BlogPage] Unexpected authorData type for post ID ${p.id}:`, typeof authorData, authorData);
+    }
+    
+    let authorIdToUse: string;
+    if (authorData && typeof authorData === 'object' && authorData.id) {
+        authorIdToUse = authorData.id;
+    } else if (typeof authorData === 'string') {
+        // If authorData is just the UUID string (e.g., relationship didn't expand)
+        authorIdToUse = authorData;
+        console.warn(`[BlogPage] Author data for post ID ${p.id} was a string (UUID), not an expanded object. Fallback for author details will be used. This might indicate RLS issues on the 'users' or 'profiles' table for anonymous users.`);
+    } else {
+        authorIdToUse = 'unknown_user_id';
+    }
+
+    const authorName = (authorData && typeof authorData === 'object' ? authorData.name : null) || 
+                       (authorData && typeof authorData === 'object' ? authorData.email : null) || 
+                       "Anonymous";
+    const authorEmail = (authorData && typeof authorData === 'object' ? authorData.email : null);
+    const authorAvatar = (authorData && typeof authorData === 'object' ? authorData.avatar_url : null);
+
+
     return {
       id: p.id,
       title: p.title || "Untitled Post",
@@ -55,10 +82,10 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
       createdAt: p.created_at,
       updatedAt: p.updated_at,
       author: {
-        id: authorData?.id || 'unknown_user_id',
-        name: authorData?.name || authorData?.email || "Anonymous",
-        email: authorData?.email,
-        avatarUrl: authorData?.avatar_url,
+        id: authorIdToUse,
+        name: authorName,
+        email: authorEmail,
+        avatarUrl: authorAvatar,
       } as User,
     } as Post;
   }) || [];
@@ -103,4 +130,7 @@ export default async function BlogPage() {
   );
 }
 
-export const revalidate = 3600;
+export const revalidate = 3600; // Revalidate every hour
+// For more immediate updates on new posts, consider on-demand revalidation via a webhook if your CMS supports it.
+// Or reduce revalidate time if frequent updates are expected and acceptable for build times/costs.
+```

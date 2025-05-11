@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">Blog Posts</CardTitle>
+                <CardTitle className="text-xl bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">Blog Posts</CardTitle>
                 <FileText className="h-6 w-6 text-primary" />
             </div>
             <CardDescription>Manage all your blog articles.</CardDescription>

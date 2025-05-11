@@ -43,7 +43,7 @@ export function HeroSection() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
              <div className="absolute bottom-6 left-6 text-white p-4 bg-black/40 rounded-lg">
-              <h3 className="text-2xl font-semibold">Innovative AI Solutions</h3>
+              <h3 className="text-2xl font-semibold bg-gradient-to-r from-white to-gray-300 text-transparent bg-clip-text">Innovative AI Solutions</h3>
               <p className="text-sm opacity-80">Transforming industries with intelligent automation.</p>
             </div>
           </div>

@@ -21,7 +21,7 @@ export function AboutSection() {
             />
           </div>
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">{`About ${SITE_NAME}`}</h2> 
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">{`About ${SITE_NAME}`}</h2> 
             <p className="text-lg text-muted-foreground">
               {`${SITE_NAME} was founded with a mission to democratize access to powerful AI technologies. We believe in the transformative potential of AI and are dedicated to helping businesses of all sizes harness it for sustainable growth and innovation.`} 
             </p>
@@ -31,7 +31,7 @@ export function AboutSection() {
                   <Lightbulb className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Innovative Solutions</h3>
+                  <h3 className="font-semibold bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">Innovative Solutions</h3>
                   <p className="text-sm text-muted-foreground">We pioneer cutting-edge AI strategies tailored to your needs.</p>
                 </div>
               </div>
@@ -40,7 +40,7 @@ export function AboutSection() {
                   <Users className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Expert Team</h3>
+                  <h3 className="font-semibold bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">Expert Team</h3>
                   <p className="text-sm text-muted-foreground">Our team comprises experienced AI researchers and engineers.</p>
                 </div>
               </div>

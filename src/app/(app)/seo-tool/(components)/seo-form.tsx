@@ -57,7 +57,7 @@ export function SeoForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl flex items-center">
+              <CardTitle className="text-2xl flex items-center bg-gradient-to-r from-accent to-accent/70 text-transparent bg-clip-text">
                 <Sparkles className="mr-2 h-6 w-6 text-accent" />
                 AI-Powered SEO Analyzer
               </CardTitle>
@@ -143,7 +143,7 @@ export function SeoForm() {
       {result && (
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl flex items-center">
+            <CardTitle className="text-2xl flex items-center bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">
               <Sparkles className="mr-2 h-6 w-6 text-primary" />
               SEO Analysis Results
             </CardTitle>

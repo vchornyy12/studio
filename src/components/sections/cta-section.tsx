@@ -48,7 +48,7 @@ export function CtaSection() {
               </div>
             </div>
              <div className="mt-8">
-                <h3 className="text-xl font-semibold text-foreground mb-3">Visit Us</h3>
+                <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 text-transparent bg-clip-text mb-3">Visit Us</h3>
                 <p className="text-muted-foreground">
                     {`${SITE_NAME} Headquarters`}<br /> 
                     123 Innovation Drive<br />
@@ -60,7 +60,7 @@ export function CtaSection() {
 
           <Card className="shadow-xl animate-slide-up delay-400">
             <CardHeader>
-              <CardTitle className="text-2xl">Send Us a Message</CardTitle>
+              <CardTitle className="text-2xl bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">Send Us a Message</CardTitle>
               <CardDescription>Fill out the form below and we'll get back to you as soon as possible.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -86,7 +86,7 @@ export function CtaSection() {
                 </Button>
               </form>
               <div className="mt-6 pt-6 border-t">
-                <h4 className="text-sm font-medium text-center text-muted-foreground mb-4">Or connect with us directly:</h4>
+                <h4 className="text-sm font-medium text-center bg-gradient-to-r from-muted-foreground to-muted-foreground/70 text-transparent bg-clip-text mb-4">Or connect with us directly:</h4>
                 <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
                   <a href="https://t.me/Vovachornyi" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50">
                     <Send className="h-4 w-4" />

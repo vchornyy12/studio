@@ -26,7 +26,9 @@ import {
   GithubIcon,
   Send, 
   Smartphone,
-  type LucideIcon // Changed to import 'type LucideIcon'
+  Bot, // Added Bot for AI Assistant Demo
+  FileText, // Added for SEO Tool in mobile
+  type LucideIcon
 } from "lucide-react";
 
 export interface NavItem {
@@ -34,7 +36,7 @@ export interface NavItem {
   href?: string; 
   isExternal?: boolean; 
   dropdown?: NavItem[]; 
-  icon?: LucideIcon; // Now correctly uses the imported type
+  icon?: LucideIcon; 
   matchPaths?: string[]; 
 }
 
@@ -45,7 +47,8 @@ export const HEADER_NAV_LINKS: NavItem[] = [
   {
     label: "Demo Apps",
     dropdown: [
-      { label: "SEO Tool", href: "/seo-tool", matchPaths: ["/seo-tool"] },
+      { label: "SEO Tool", href: "/seo-tool", matchPaths: ["/seo-tool"], icon: FileText },
+      { label: "AI Assistant", href: "/demo/ai-assistant", matchPaths: ["/demo/ai-assistant"], icon: Bot },
     ],
   },
   { label: "Blog", href: "/blog", matchPaths: ["/blog", "/blog/[slug]"] },
@@ -64,9 +67,9 @@ export const FOOTER_NAV_LINKS = {
   ],
   services: [ 
     { label: "Custom AI Development", href: "/services/custom-ai-dev" },
-    { label: "AI System Integration", href: "/#services/ai-integration" },
-    { label: "AI-Powered Data Analytics", href: "/#services/data-analytics" },
-    { label: "AI Assistants Development", href: "/#services/nlp-solutions" }
+    { label: "AI System Integration", href: "/services/ai-integration" },
+    { label: "AI-Powered Data Analytics", href: "/services/data-analytics" },
+    { label: "AI Assistants Development", href: "/services/nlp-solutions" }
   ],
 };
 

@@ -10,9 +10,9 @@ export function AboutSection() {
     <section id="about" className="py-10 md:py-16 bg-secondary/30"> {/* Reduced padding */}
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-[10/9] rounded-xl overflow-hidden shadow-xl">
+          <div className="relative aspect-[10/7] rounded-xl overflow-hidden shadow-xl">
             <Image
-              src="https://cdn.pixabay.com/photo/2022/05/10/01/56/vr-7185802_1280.jpg"
+              src="https://cdn.pixabay.com/photo/2024/05/21/19/58/code-8779047_1280.jpg"
               alt={`${SITE_NAME} Team`} 
               layout="fill"
               objectFit="cover"

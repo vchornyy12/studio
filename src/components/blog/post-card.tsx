@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Post } from "@/lib/types"; // Use Post type from lib/types
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { Badge } from "@/components/ui/badge"; // Tags removed
@@ -9,11 +10,49 @@ import { ArrowRight } from "lucide-react";
 import { format } from 'date-fns';
 
 type PostCardProps = {
-  post: Post;
+ post: { id: string } & Partial<Post>; // Accept id and potentially partial post data
 };
 
 export function PostCard({ post }: PostCardProps) {
+  // Placeholder data or load initial data if needed
+  // In a real application, you might fetch initial data based on 'post.id'
+  // This example assumes 'post' might come with some initial data already.
+
+  // Example of fetching data based on post.id - uncomment and adapt if needed
+  // const [fullPost, setFullPost] = useState<Post | null>(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   const fetchPost = async () => {
+  //     const supabase = createClient();
+  //     const { data, error } = await supabase
+  //       .from("blog_posts")
+  //       .select("title, slug, content, summary, cover_image, published")
+  //       .eq("id", post.id)
+  //       .single();
+  //     if (error) {
+  //       setError(error.message);
+  //     } else {
+  //       setFullPost(data);
+  //     }
+  //     setLoading(false);
+  //   };
+  //   fetchPost();
+  // }, [post.id]);
+
+  // Use fullPost if loaded, otherwise use the partial post data
+  // const displayPost = fullPost || post;
+  const displayPost = post; // Using the provided partial data for simplicity in this example
+
+  // Handle loading or error states if fetching data within the component
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error}</div>;
+  // if (!displayPost) return null; // Or some other placeholder if the post couldn't be loaded
+
+
   return (
+    // Use displayPost for rendering
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full">
       {post.cover_image && (
         <Link href={`/blog/${post.slug}`} className="block aspect-video relative overflow-hidden">

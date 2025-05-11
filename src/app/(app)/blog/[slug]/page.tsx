@@ -1,9 +1,10 @@
 // src/app/(app)/blog/[slug]/page.tsx
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server"; // For request-time operations
 import { PostContent } from "@/components/blog/post-content";
 import { notFound } from "next/navigation";
 import type { Metadata, ResolvingMetadata } from 'next';
 import type { Post, User } from "@/lib/types"; 
+import { createClient as createSupabaseStandardClient } from '@supabase/supabase-js'; // For build-time operations
 
 interface BlogProps {
   params: { slug: string };
@@ -49,7 +50,7 @@ async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
   }
   
   const p = data as any; 
-  const authorData = p.user_id; // This should be an object if the join worked, or null/string(uuid)
+  const authorData = p.user_id; 
 
   if (authorData && typeof authorData !== 'object' && typeof authorData !== 'string') {
       console.warn(`[BlogSlugPage: ${slug}] Unexpected authorData type for post ID ${p.id}:`, typeof authorData, authorData);
@@ -59,7 +60,6 @@ async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
   if (authorData && typeof authorData === 'object' && authorData.id) {
       authorIdToUse = authorData.id;
   } else if (typeof authorData === 'string') {
-      // If authorData is just the UUID string (e.g., relationship didn't expand)
       authorIdToUse = authorData;
       console.warn(`[BlogSlugPage: ${slug}] Author data for post ID ${p.id} was a string (UUID), not an expanded object. Fallback for author details will be used. This might indicate RLS issues on the 'users' or 'profiles' table for anonymous users.`);
   } else {
@@ -112,15 +112,15 @@ export async function generateMetadata(
   const imageUrl = post.cover_image; 
 
   return {
-    title: `${pageTitle} | AI Nexus Blog`, // Added site name for consistency
+    title: `${pageTitle} | AI Nexus Blog`, 
     description: pageDescription,
     openGraph: {
       title: pageTitle,
       description: pageDescription,
-      url: `/blog/${post.slug}`, // Added canonical URL
+      url: `/blog/${post.slug}`, 
       type: 'article',
       publishedTime: post.createdAt || undefined,
-      modifiedTime: post.updatedAt || undefined, // Added modified time
+      modifiedTime: post.updatedAt || undefined, 
       authors: post.author?.name && post.author.name !== "Anonymous" ? [post.author.name] : undefined,
       images: imageUrl ? [{ url: imageUrl, alt: pageTitle }, ...previousImages] : previousImages,
     },
@@ -134,16 +134,22 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams() {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) {
-    console.error("[BlogSlugPage generateStaticParams] Supabase client not available.");
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("[BlogSlugPage generateStaticParams] Supabase URL or Anon Key not configured for build-time client. Skipping static param generation.");
     return [];
   }
+
+  // Use the standard Supabase client for build-time data fetching for generateStaticParams
+  // This client does not depend on Next.js cookies/headers from `next/headers`
+  const supabase = createSupabaseStandardClient(supabaseUrl, supabaseAnonKey);
 
   const { data: postsData, error } = await supabase
     .from("blog_posts")
     .select("slug")
-    .eq("published", true); // Ensure only published posts are pre-rendered
+    .eq("published", true); 
 
   if (error) {
     console.error("[BlogSlugPage generateStaticParams] Error fetching slugs:", error.message);
@@ -157,7 +163,7 @@ export async function generateStaticParams() {
 
   return postsData.map((post) => ({
     slug: post.slug as string,
-  })).filter(p => p.slug); // Ensure slug is not null/empty
+  })).filter(p => p.slug); 
 }
 
 export default async function BlogPostPage({ params }: BlogProps) {
@@ -176,6 +182,4 @@ export default async function BlogPostPage({ params }: BlogProps) {
   );
 }
 
-// Revalidate this page ISR (Incremental Static Regeneration)
-// Revalidate at most every hour, or on-demand if revalidation is triggered
 export const revalidate = 3600;

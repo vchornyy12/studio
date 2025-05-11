@@ -26,7 +26,7 @@ import {
   GithubIcon,
   Send, 
   Smartphone,
-  Icon as LucideIcon 
+  type LucideIcon // Changed to import 'type LucideIcon'
 } from "lucide-react";
 
 export interface NavItem {
@@ -34,7 +34,7 @@ export interface NavItem {
   href?: string; 
   isExternal?: boolean; 
   dropdown?: NavItem[]; 
-  icon?: LucideIcon; 
+  icon?: LucideIcon; // Now correctly uses the imported type
   matchPaths?: string[]; 
 }
 
@@ -56,13 +56,16 @@ export const FOOTER_NAV_LINKS = {
   company: [
     { label: "About Us", href: "/#about" },
     { label: "Blog", href: "/blog" },
-    { label: "Contact", href: "/#contact" },
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms of Service", href: "/terms-of-service" },
-  ]
-  // demo_apps and connect sections removed for rollback
+  ],
+  services: [ 
+    { label: "AI Consulting", href: "/#services" },
+    { label: "Custom AI Development", href: "/#services" },
+    { label: "Data Analytics", href: "/#services" },
+  ],
 };
 
 export const SOCIAL_LINKS = [

@@ -8,7 +8,7 @@ export type Post = {
   summary: string; // Replaces excerpt and seo_description
   content: string; // Markdown or HTML content
   cover_image?: string; // Replaces imageUrl and featured_image_url
-  author: User;
+  //author: User;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   published: boolean; // Replaces status and published_at for publication state

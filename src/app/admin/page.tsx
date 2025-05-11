@@ -1,16 +1,17 @@
 // src/app/admin/page.tsx
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getUser } from "@/lib/supabase/server"; // For server-side user fetching
+import { getUser } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileText, PlusCircle } from "lucide-react";
+import { SITE_NAME } from "@/lib/constants"; // Import SITE_NAME
 
 export const metadata = {
-  title: "Admin Dashboard | AI Nexus",
+  title: `Admin Dashboard | ${SITE_NAME}`,
 };
 
 export default async function AdminDashboardPage() {
-  const user = await getUser(); // Fetch user server-side for initial render or specific checks
+  const user = await getUser(); 
 
   return (
     <div className="space-y-8">
@@ -33,7 +34,6 @@ export default async function AdminDashboardPage() {
             <CardDescription>Manage all your blog articles.</CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Add some quick stats or info here if available */}
             <p className="text-sm text-muted-foreground mb-4">View, edit, and create new posts.</p>
             <div className="flex gap-2">
                 <Button asChild>
@@ -46,20 +46,6 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Add more cards for other admin sections as needed */}
-        {/* Example:
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-xl">Site Settings</CardTitle>
-            <CardDescription>Configure global site settings.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="secondary">
-                <Link href="/admin/settings">Go to Settings</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        */}
       </div>
     </div>
   );

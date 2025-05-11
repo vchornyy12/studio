@@ -11,14 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Brain } from "lucide-react";
 import { SITE_NAME } from "@/lib/constants";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import type { Metadata } from 'next';
+// import type { Metadata } from 'next'; // Metadata not typically exported from client components
 
-// Note: Metadata export from client components is not directly supported in App Router.
-// It should be moved to a parent server component or a layout.tsx if static, or handled dynamically.
-// For simplicity in this step, we'll keep it here, but acknowledge this limitation.
+// For static metadata on this page, it should be defined in a parent Server Component or layout.tsx.
+// If dynamic metadata is needed based on client-side state, it would be handled differently.
 // export const metadata: Metadata = {
-//   title: 'Login | AI Nexus',
-//   description: 'Login to your AI Nexus account to access admin features and more.',
+//   title: `Login | ${SITE_NAME}`,
+//   description: `Login to your ${SITE_NAME} account to access admin features and more.`,
 // };
 
 export default function LoginPage() {
@@ -52,14 +51,11 @@ export default function LoginPage() {
       setError(signInError.message);
     } else {
       setMessage("Logged in successfully! Redirecting...");
-      // Wait for Supabase to set the session cookie
-      // Then redirect to the admin page or a dashboard
-      router.push("/admin"); // Or router.refresh() and let a layout handle redirect based on user state
+      router.push("/admin"); 
     }
     setLoading(false);
   };
 
-  // Placeholder for password reset functionality
   const handlePasswordReset = async () => {
     if (!email) {
       setError("Please enter your email address to reset the password.");
@@ -74,7 +70,7 @@ export default function LoginPage() {
       return;
     }
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/update-password`, // Update with your actual password update page
+      redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
     });
     if (resetError) {
       setError(resetError.message);
@@ -142,7 +138,7 @@ export default function LoginPage() {
           </form>
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground">
-              Need an account? Contact admin. {/* Or implement a sign-up flow */}
+              Need an account? Contact admin. 
             </p>
             <Link href="/" className="font-medium text-primary hover:underline">
               &larr; Back to Homepage

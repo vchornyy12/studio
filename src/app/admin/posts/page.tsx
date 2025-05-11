@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { deletePostAction } from "./actions";
-import type { Post } from "@/lib/types"; // Use Post type from lib/types
+import type { Post } from "@/lib/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,9 +19,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { SITE_NAME } from "@/lib/constants"; // Import SITE_NAME
 
 export const metadata = {
-  title: "Manage Posts | Admin - AI Nexus",
+  title: `Manage Posts | Admin - ${SITE_NAME}`,
 };
 
 const formatDate = (dateString: string | null) => {
@@ -33,38 +34,32 @@ const formatDate = (dateString: string | null) => {
       day: "numeric",
     });
   } catch (error) {
-    return dateString; // Return original string if date parsing fails
+    return dateString; 
   }
 };
 
-// Remove local Post interface, will use imported one.
-
 export default async function AdminPostsPage() {
   const supabase = createSupabaseServerClient();
-  let posts: Post[] = []; // Use the imported Post type
+  let posts: Post[] = []; 
   let fetchError: string | null = null;
 
   if (supabase) {
-    // Select new fields: published, remove status and published_at for status determination
     const { data, error } = await supabase
       .from("blog_posts") 
-      .select("id, title, created_at, slug, published, cover_image, summary, content, updated_at, user_id") // Fetch all necessary fields for Post type
+      .select("id, title, created_at, slug, published, cover_image, summary, content, updated_at, user_id") 
       .order("created_at", { ascending: false });
 
     if (error) {
       console.error("[AdminPostsPage] Error fetching posts from Supabase:", error);
       fetchError = "Could not retrieve posts. Check server logs and Supabase RLS policies.";
     } else {
-      // Map Supabase data to our Post type structure, especially for author
-      // This mapping is more robustly done where the full Post object is needed (e.g. blog pages)
-      // For the admin list, we might not need the full author object, but it's good practice to align.
-      // Here, we'll cast and assume the basic fields are what we need for this table.
+      // Map Supabase data to our Post type structure, removing author
       posts = data.map(p => ({
         ...p,
-        createdAt: p.created_at, // Map to camelCase
+        createdAt: p.created_at,
         updatedAt: p.updated_at,
         cover_image: p.cover_image,
-        author: { id: p.user_id, name: 'Author Name Placeholder' } // Simplified author for admin list
+        // author: { id: p.user_id, name: 'Author Name Placeholder' } // Removed author mapping
       })) as Post[];
     }
   } else {
@@ -181,4 +176,3 @@ export default async function AdminPostsPage() {
     </div>
   );
 }
-

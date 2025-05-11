@@ -7,19 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Send, Smartphone } from "lucide-react"; 
+import { SITE_NAME, CONTACT_EMAIL } from "@/lib/constants"; 
 
 export function CtaSection() {
   const { toast } = useToast();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Placeholder for form submission logic
-    // In a real app, you'd send this data to a backend or email service.
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name");
-    const email = formData.get("email");
-    console.log("Form submitted:", { name, email, message: formData.get("message") });
+    console.log("Form submitted:", { name, email: formData.get("email"), message: formData.get("message") });
     toast({
       title: "Message Sent!",
       description: `Thank you, ${name || 'friend'}! We'll be in touch shortly.`,
@@ -29,7 +27,7 @@ export function CtaSection() {
   };
 
   return (
-    <section id="contact" className="py-16 md:py-24 animate-fade-in">
+    <section id="contact" className="py-10 md:py-16 animate-fade-in"> {/* Reduced padding */}
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div className="space-y-6 animate-slide-up delay-200">
@@ -37,12 +35,12 @@ export function CtaSection() {
               Ready to Transform Your Business?
             </h2>
             <p className="text-lg text-muted-foreground">
-              Let's discuss how AI Nexus can help you leverage artificial intelligence for unparalleled growth and efficiency. Reach out to us today for a personalized consultation.
+              {`Let's discuss how ${SITE_NAME} can help you leverage artificial intelligence for unparalleled growth and efficiency. Reach out to us today for a personalized consultation.`} 
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3 group">
                 <Mail className="h-6 w-6 text-primary group-hover:animate-pulse-bright" />
-                <a href="mailto:contact@ainexus.com" className="text-lg text-muted-foreground hover:text-primary transition-colors">contact@ainexus.com</a>
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{CONTACT_EMAIL}</a> 
               </div>
               <div className="flex items-center gap-3 group">
                 <Phone className="h-6 w-6 text-primary group-hover:animate-pulse-bright" />
@@ -52,7 +50,7 @@ export function CtaSection() {
              <div className="mt-8">
                 <h3 className="text-xl font-semibold text-foreground mb-3">Visit Us</h3>
                 <p className="text-muted-foreground">
-                    AI Nexus Headquarters<br />
+                    {`${SITE_NAME} Headquarters`}<br /> 
                     123 Innovation Drive<br />
                     Tech City, TX 75001<br />
                     United States
@@ -87,6 +85,19 @@ export function CtaSection() {
                   Send Message
                 </Button>
               </form>
+              <div className="mt-6 pt-6 border-t">
+                <h4 className="text-sm font-medium text-center text-muted-foreground mb-4">Or connect with us directly:</h4>
+                <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
+                  <a href="https://t.me/Vovachornyi" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50">
+                    <Send className="h-4 w-4" />
+                    Telegram
+                  </a>
+                  <a href="https://wa.me/48889906053" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50">
+                    <Smartphone className="h-4 w-4" />
+                    WhatsApp
+                  </a>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

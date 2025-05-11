@@ -1,9 +1,10 @@
 // src/app/(app)/seo-tool/page.tsx
 import { SeoForm } from "./(components)/seo-form";
 import type { Metadata } from 'next';
+import { SITE_NAME } from "@/lib/constants"; // Import SITE_NAME
 
 export const metadata: Metadata = {
-  title: 'AI SEO Optimization Tool | AI Nexus',
+  title: `AI SEO Optimization Tool | ${SITE_NAME}`,
   description: 'Utilize our AI-powered SEO tool to analyze your content, get actionable suggestions, and improve your search engine rankings. Optimize your text for target keywords effectively.',
 };
 

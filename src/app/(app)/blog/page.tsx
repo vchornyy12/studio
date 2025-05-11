@@ -1,15 +1,16 @@
 // src/app/(app)/blog/page.tsx
 import { PostCard } from "@/components/blog/post-card";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Post, User } from "@/lib/types"; // Use Post type from lib/types
+import type { Post } from "@/lib/types"; // User import removed
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FileWarning } from "lucide-react";
 import type { Metadata } from 'next';
+import { SITE_NAME } from "@/lib/constants"; // Import SITE_NAME
 
 export const metadata: Metadata = {
-  title: 'Blog | AI Nexus',
-  description: 'Explore insights, trends, and expert opinions on AI integration, machine learning, and technology from the AI Nexus team. Stay informed with our latest articles.',
-  keywords: 'AI blog, AI Nexus blog, artificial intelligence articles, machine learning insights, AI trends, technology blog',
+  title: `Blog | ${SITE_NAME}`,
+  description: `Explore insights, trends, and expert opinions on AI integration, machine learning, and technology from the ${SITE_NAME} team. Stay informed with our latest articles.`,
+  keywords: `AI blog, ${SITE_NAME} blog, artificial intelligence articles, machine learning insights, AI trends, technology blog`,
 };
 
 async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | null }> {
@@ -30,8 +31,7 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
       summary, 
       content, 
       cover_image, 
-      published,
-      user_id ( id, name, avatar_url, email )
+      published
     `) 
     .eq("published", true) 
     .order("created_at", { ascending: false });
@@ -43,45 +43,21 @@ async function fetchPublishedPosts(): Promise<{ posts: Post[]; error: string | n
 
   if (!data) {
     console.warn("[BlogPage] No data returned for published posts, but no explicit error. This might indicate RLS issues or no published posts.");
-    return { posts: [], error: null }; // No error, but no data
+    return { posts: [], error: null };
   }
   
-  const fetchedPosts = data?.map((p: any) => {
-    const authorData = p.user_id; 
-
-    let author: User;
-
-    if (authorData && typeof authorData === 'object' && authorData.id) {
-      author = {
-        id: authorData.id,
-        name: authorData.name || authorData.email?.split('@')[0] || "Anonymous",
-        email: authorData.email,
-        avatarUrl: authorData.avatar_url,
-      };
-    } else {
-      // Fallback if user_id is not expanded (e.g. due to RLS or if it's just a UUID string)
-      // This situation should ideally be avoided by ensuring RLS allows fetching related user data.
-      console.warn(`[BlogPage] Author data for post ID ${p.id} was not fully resolved. Displaying as Anonymous or using placeholder. Author data received:`, authorData);
-      author = {
-        id: typeof authorData === 'string' ? authorData : p.user_id || 'unknown_user_id',
-        name: "Anonymous", 
-        // email and avatarUrl would be undefined or null here
-      };
-    }
-
-    return {
-      id: p.id,
-      title: p.title || "Untitled Post",
-      slug: p.slug || p.id,
-      summary: p.summary || p.content?.substring(0, 150) || "",
-      content: p.content || "",
-      cover_image: p.cover_image,
-      published: p.published,
-      createdAt: p.created_at,
-      updatedAt: p.updated_at,
-      author: author,
-    } as Post;
-  }) || [];
+  // Map Supabase data to our Post type, excluding author
+  const fetchedPosts = data?.map((p: any) => ({
+    id: p.id,
+    title: p.title || "Untitled Post",
+    slug: p.slug || p.id,
+    summary: p.summary || p.content?.substring(0, 150) || "",
+    content: p.content || "",
+    cover_image: p.cover_image,
+    published: p.published,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+  })) || [];
   
   return { posts: fetchedPosts, error: null };
 }
@@ -94,10 +70,10 @@ export default async function BlogPage() {
       <div className="container mx-auto px-4 md:px-6">
         <header className="text-center mb-12 md:mb-16 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            AI Nexus Blog
+            {`${SITE_NAME} Blog`} {/* Changed to use SITE_NAME */}
           </h1>
           <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-slide-up delay-200">
-            Insights, tutorials, and discussions on the transformative power of AI. Explore the latest trends and expert opinions from the AI Nexus team.
+            {`Insights, tutorials, and discussions on the transformative power of AI. Explore the latest trends and expert opinions from the ${SITE_NAME} team.`} {/* Changed to use SITE_NAME */}
           </p>
         </header>
 
@@ -123,6 +99,4 @@ export default async function BlogPage() {
   );
 }
 
-export const revalidate = 3600; // Revalidate every hour
-// For more immediate updates on new posts, consider on-demand revalidation via a webhook if your CMS supports it.
-// Or reduce revalidate time if frequent updates are expected and acceptable for build times/costs.
+export const revalidate = 3600;

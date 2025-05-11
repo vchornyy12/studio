@@ -1,23 +1,57 @@
 // src/app/(app)/blog/[slug]/page.tsx
-import { createSupabaseServerClient } from "@/lib/supabase/server"; // For request-time operations
+import * as React from "react";
+import { createSupabaseServerClient } from "@/lib/supabase/server"; 
+import { createClient } from '@supabase/supabase-js'; 
 import { PostContent } from "@/components/blog/post-content";
 import { notFound } from "next/navigation";
-import type { Metadata, ResolvingMetadata } from 'next';
-import type { Post, User } from "@/lib/types"; 
-import { createClient as createSupabaseStandardClient } from '@supabase/supabase-js'; // For build-time operations
+import type { Metadata } from 'next';
+import type { Post } from "@/lib/types";
+import { SITE_NAME } from "@/lib/constants"; // Import SITE_NAME
 
 interface BlogProps {
   params: { slug: string };
 }
 
-async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
-  const supabase = createSupabaseServerClient();
+export async function generateStaticParams() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("[BlogSlugPage:generateStaticParams] Supabase URL or Anon Key not configured. Skipping static param generation.");
+    return [];
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+  const { data: posts, error } = await supabase
+    .from("blog_posts")
+    .select("id, slug, published") 
+    .eq("published", true);
+
+  if (error) {
+    console.error("[BlogSlugPage:generateStaticParams] Error fetching posts for static generation:", error.message);
+    return [];
+  }
+
+  if (!posts) {
+    return [];
+  }
+
+  return posts.map((post) => ({
+    slug: post.slug || post.id, 
+  })).filter(p => p.slug); 
+}
+
+async function getPublishedPostBySlug(identifier: string): Promise<Post | null> {
+  const supabase = createSupabaseServerClient(); 
   if (!supabase) {
-    console.error(`[BlogSlugPage: ${slug}] Supabase client not available.`);
+    console.error(`[BlogSlugPage: ${identifier}] Supabase client (server) not available.`);
     return null;
   }
 
-  const { data, error } = await supabase
+  const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(identifier);
+
+  let query = supabase
     .from("blog_posts")
     .select(`
       id, 
@@ -28,142 +62,68 @@ async function getPublishedPostBySlug(slug: string): Promise<Post | null> {
       summary, 
       content, 
       cover_image, 
-      published,
-      user_id ( id, name, email, avatar_url ) 
-    `) 
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
+      published
+    `)
+    .eq('published', true);
+
+  if (isUUID) {
+    query = query.eq('id', identifier);
+  } else {
+    query = query.eq('slug', identifier);
+  }
+  
+  const { data, error } = await query.single();
 
   if (error) {
-    if (error.code === 'PGRST116') { // PGRST116: "Query result returned no rows" - expected for not found
-      console.log(`[BlogSlugPage: ${slug}] Post not found or not published (PGRST116).`);
-    } else {
-      console.error(`[BlogSlugPage: ${slug}] Error fetching post by slug. DB Error: ${error.message}`, "Details:", error);
-    }
+    console.error(`[BlogSlugPage: ${identifier}] Error fetching post:`, error.message);
     return null;
   }
-  
+
   if (!data) {
-    console.warn(`[BlogSlugPage: ${slug}] No data returned for post, but no explicit error. This might indicate RLS issues preventing access.`);
     return null;
   }
-  
-  const p = data as any; 
-  const authorData = p.user_id; 
 
-  if (authorData && typeof authorData !== 'object' && typeof authorData !== 'string') {
-      console.warn(`[BlogSlugPage: ${slug}] Unexpected authorData type for post ID ${p.id}:`, typeof authorData, authorData);
-  }
-
-  let authorIdToUse: string;
-  if (authorData && typeof authorData === 'object' && authorData.id) {
-      authorIdToUse = authorData.id;
-  } else if (typeof authorData === 'string') {
-      authorIdToUse = authorData;
-      console.warn(`[BlogSlugPage: ${slug}] Author data for post ID ${p.id} was a string (UUID), not an expanded object. Fallback for author details will be used. This might indicate RLS issues on the 'users' or 'profiles' table for anonymous users.`);
-  } else {
-      authorIdToUse = 'unknown_user_id';
-  }
-
-  const authorName = (authorData && typeof authorData === 'object' ? authorData.name : null) || 
-                     (authorData && typeof authorData === 'object' ? authorData.email : null) || 
-                     "Anonymous";
-  const authorEmail = (authorData && typeof authorData === 'object' ? authorData.email : null);
-  const authorAvatar = (authorData && typeof authorData === 'object' ? authorData.avatar_url : null);
-
-  const post: Post = {
-    id: p.id,
-    title: p.title || "Untitled Post",
-    slug: p.slug || p.id,
-    summary: p.summary || p.content?.substring(0, 150) || "",
-    content: p.content || "",
-    cover_image: p.cover_image,
-    published: p.published,
-    createdAt: p.created_at,
-    updatedAt: p.updated_at,
-    author: {
-      id: authorIdToUse,
-      name: authorName,
-      email: authorEmail,
-      avatarUrl: authorAvatar,
-    } as User,
+  return {
+    id: data.id,
+    title: data.title,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    slug: data.slug,
+    summary: data.summary,
+    content: data.content,
+    cover_image: data.cover_image,
+    published: data.published,
   };
-
-  return post;
 }
 
-export async function generateMetadata(
-  { params }: BlogProps,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: BlogProps): Promise<Metadata> {
   const post = await getPublishedPostBySlug(params.slug);
 
   if (!post) {
     return {
-      title: "Post Not Found | AI Nexus",
+      title: `Post Not Found | ${SITE_NAME}`,
       description: "The blog post you are looking for could not be found.",
     };
   }
 
-  const previousImages = (await parent).openGraph?.images || [];
-  const pageTitle = post.title || "Blog Post";
-  const pageDescription = post.summary || "Read this exciting blog post from AI Nexus.";
-  const imageUrl = post.cover_image; 
-
   return {
-    title: `${pageTitle} | AI Nexus Blog`, 
-    description: pageDescription,
+    title: `${post.title || 'Blog Post'} | ${SITE_NAME}`,
+    description: post.summary || "Read this blog post.",
     openGraph: {
-      title: pageTitle,
-      description: pageDescription,
-      url: `/blog/${post.slug}`, 
-      type: 'article',
-      publishedTime: post.createdAt || undefined,
-      modifiedTime: post.updatedAt || undefined, 
-      authors: post.author?.name && post.author.name !== "Anonymous" ? [post.author.name] : undefined,
-      images: imageUrl ? [{ url: imageUrl, alt: pageTitle }, ...previousImages] : previousImages,
+        title: post.title || 'Blog Post',
+        description: post.summary || undefined,
+        type: 'article',
+        publishedTime: post.createdAt ? new Date(post.createdAt).toISOString() : undefined,
+        modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
+        images: post.cover_image ? [{ url: post.cover_image }] : [],
     },
     twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
-      title: pageTitle,
-      description: pageDescription,
-      images: imageUrl ? [imageUrl] : undefined,
+        card: 'summary_large_image',
+        title: post.title || 'Blog Post',
+        description: post.summary || undefined,
+        images: post.cover_image ? [post.cover_image] : [],
     },
   };
-}
-
-export async function generateStaticParams() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("[BlogSlugPage generateStaticParams] Supabase URL or Anon Key not configured for build-time client. Skipping static param generation.");
-    return [];
-  }
-
-  // Use the standard Supabase client for build-time data fetching for generateStaticParams
-  // This client does not depend on Next.js cookies/headers from `next/headers`
-  const supabase = createSupabaseStandardClient(supabaseUrl, supabaseAnonKey);
-
-  const { data: postsData, error } = await supabase
-    .from("blog_posts")
-    .select("slug")
-    .eq("published", true); 
-
-  if (error) {
-    console.error("[BlogSlugPage generateStaticParams] Error fetching slugs:", error.message);
-    return [];
-  }
-
-  if (!postsData || postsData.length === 0) {
-    console.warn("[BlogSlugPage generateStaticParams] No published post slugs found for static generation.");
-    return [];
-  }
-
-  return postsData.map((post) => ({
-    slug: post.slug as string,
-  })).filter(p => p.slug); 
 }
 
 export default async function BlogPostPage({ params }: BlogProps) {

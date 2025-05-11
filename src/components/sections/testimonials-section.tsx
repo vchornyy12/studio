@@ -1,13 +1,23 @@
 // src/components/sections/testimonials-section.tsx
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Testimonial } from "@/lib/types";
+// import type { Testimonial } from "@/lib/types"; // Using LocalTestimonial
 import { Star } from "lucide-react";
+import { SITE_NAME } from "@/lib/constants"; 
 
-const testimonials: Testimonial[] = [
+interface LocalTestimonial {
+  id: string;
+  quote: string;
+  authorName: string;
+  authorTitle: string;
+  authorCompany?: string;
+  authorAvatarUrl?: string;
+}
+
+const testimonials: LocalTestimonial[] = [
   {
     id: "1",
-    quote: "AI Nexus transformed our operations. Their AI solutions are top-notch, and the team is incredibly knowledgeable and supportive.",
+    quote: `${SITE_NAME} transformed our operations. Their AI solutions are top-notch, and the team is incredibly knowledgeable and supportive.`,
     authorName: "Jane Doe",
     authorTitle: "CEO",
     authorCompany: "Tech Solutions Inc.",
@@ -15,7 +25,7 @@ const testimonials: Testimonial[] = [
   },
   {
     id: "2",
-    quote: "The expertise AI Nexus brought to our data analytics project was game-changing. We've seen significant improvements in efficiency.",
+    quote: `The expertise ${SITE_NAME} brought to our data analytics project was game-changing. We've seen significant improvements in efficiency.`,
     authorName: "John Smith",
     authorTitle: "CTO",
     authorCompany: "Innovate Corp.",
@@ -23,7 +33,7 @@ const testimonials: Testimonial[] = [
   },
   {
     id: "3",
-    quote: "Working with AI Nexus has been a pleasure. Their custom AI tools have given us a real competitive edge.",
+    quote: `Working with ${SITE_NAME} has been a pleasure. Their custom AI tools have given us a real competitive edge.`,
     authorName: "Alice Brown",
     authorTitle: "Head of Product",
     authorCompany: "Future Forward Ltd.",
@@ -33,12 +43,12 @@ const testimonials: Testimonial[] = [
 
 export function TestimonialsSection() {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-10 md:py-16 bg-background"> {/* Reduced padding */}
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-10 md:mb-12"> {/* Reduced margin-bottom */}
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">What Our Clients Say</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hear from businesses that have partnered with AI Nexus to achieve their goals.
+            {`Hear from businesses that have partnered with ${SITE_NAME} to achieve their goals.`} 
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

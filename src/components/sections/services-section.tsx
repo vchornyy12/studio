@@ -24,7 +24,7 @@ const services: Service[] = [
   },
   {
     id: "nlp-solutions",
-    title: "Natural Language Processing",
+    title: "AI Assistants Development",
     description: "Leverage NLP for chatbots, sentiment analysis, text summarization, and other language-based AI tasks.",
     icon: Bot,
   },
@@ -32,9 +32,9 @@ const services: Service[] = [
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-16 md:py-24 bg-background">
+    <section id="services" className="py-10 md:py-16 bg-background"> {/* Reduced padding */}
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-10 md:mb-12"> {/* Reduced margin-bottom */}
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">Our Expertise</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             We offer a comprehensive suite of AI services to help your business thrive in the age of artificial intelligence.

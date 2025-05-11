@@ -56,15 +56,17 @@ export const FOOTER_NAV_LINKS = {
   company: [
     { label: "About Us", href: "/#about" },
     { label: "Blog", href: "/blog" },
+    { label: "Contact", href: "/#contact" }
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms of Service", href: "/terms-of-service" },
   ],
   services: [ 
-    { label: "AI Consulting", href: "/#services" },
-    { label: "Custom AI Development", href: "/#services" },
-    { label: "Data Analytics", href: "/#services" },
+    { label: "Custom AI Development", href: "/services/custom-ai-dev" },
+    { label: "AI System Integration", href: "/#services/ai-integration" },
+    { label: "AI-Powered Data Analytics", href: "/#services/data-analytics" },
+    { label: "AI Assistants Development", href: "/#services/nlp-solutions" }
   ],
 };
 

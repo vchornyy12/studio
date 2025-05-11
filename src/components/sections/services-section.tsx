@@ -1,6 +1,8 @@
 // src/components/sections/services-section.tsx
+import Link from "next/link"; // Added Link import
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Bot, BrainCircuit, Cog, BarChartBig } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Added Button import
+import { Bot, BrainCircuit, Cog, BarChartBig, ArrowRight } from "lucide-react"; // Added ArrowRight
 import type { Service } from "@/lib/types";
 
 const services: Service[] = [
@@ -9,24 +11,28 @@ const services: Service[] = [
     title: "Custom AI Development",
     description: "Tailored AI models and applications designed to meet your unique business challenges and objectives.",
     icon: BrainCircuit,
+    href: "/services/custom-ai-dev", // Added href
   },
   {
     id: "ai-integration",
     title: "AI System Integration",
     description: "Seamlessly integrate AI capabilities into your existing workflows and software infrastructure.",
     icon: Cog,
+    href: "/services/ai-integration", // Added href
   },
   {
     id: "data-analytics",
     title: "AI-Powered Data Analytics",
     description: "Unlock insights from your data with advanced AI analytics, predictive modeling, and data visualization.",
     icon: BarChartBig,
+    href: "/services/data-analytics", // Added href
   },
   {
     id: "nlp-solutions",
     title: "AI Assistants Development",
     description: "Leverage NLP for chatbots, sentiment analysis, text summarization, and other language-based AI tasks.",
     icon: Bot,
+    href: "/services/nlp-solutions", // Added href
   },
 ];
 
@@ -47,10 +53,17 @@ export function ServicesSection() {
                 {service.icon && <service.icon className="h-12 w-12 mb-4 text-primary" />}
                 <CardTitle className="text-xl bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">{service.title}</CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <CardDescription className="text-center text-base">
+              <CardContent className="flex-grow flex flex-col">
+                <CardDescription className="text-center text-base mb-4 flex-grow">
                   {service.description}
                 </CardDescription>
+                {service.href && (
+                  <Button asChild variant="outline" size="sm" className="mt-auto w-full group">
+                    <Link href={service.href}>
+                      Learn More <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

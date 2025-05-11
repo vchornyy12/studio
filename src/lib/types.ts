@@ -1,51 +1,50 @@
 // src/lib/types.ts
+import type { LucideIcon } from "lucide-react";
 
-// Represents a blog post
-export type Post = {
-  id: string;
-  slug: string;
-  title: string;
-  summary: string; // Replaces excerpt and seo_description
-  content: string; // Markdown or HTML content
-  cover_image?: string; // Replaces imageUrl and featured_image_url
-  //author: User;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  published: boolean; // Replaces status and published_at for publication state
-  // Add any other relevant fields like view count, likes, etc.
-};
-
-// Represents a user (author or general user)
-export type User = {
-  id: string;
-  name: string; // Should be populated, e.g., full_name or fallback to email/anonymous
-  avatarUrl?: string;
-  email?: string; // May not always be public
-  // Add other user-related fields, e.g., bio, role
-};
-
-// Represents a service offered by the agency
-export type Service = {
+export interface Service {
   id: string;
   title: string;
   description: string;
-  icon?: React.ElementType; // Lucide icon component or similar
-  detailsUrl?: string; // Link to a more detailed page if needed
-};
+  icon?: LucideIcon; // Icon is optional
+  href?: string; // href is optional, for linking to service pages
+}
 
-// Represents a testimonial
-export type Testimonial = {
+export interface Testimonial {
   id: string;
   quote: string;
   authorName: string;
   authorTitle: string;
   authorCompany?: string;
   authorAvatarUrl?: string;
-};
+}
 
-// SEO Optimization Tool Output (matches the GenAI flow output)
-export type SeoOptimizationResult = {
-  suggestions: string;
-  seoScore: number;
-};
+export interface NavLink {
+  href: string;
+  label: string;
+  current?: boolean; // Optional: to mark the current active link
+}
 
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  date: string; // ISO date string
+  tags: string[];
+  imageUrl?: string;
+  featured?: boolean;
+}
+
+// For the AI SEO Tool
+export interface OptimizeSeoTextInput {
+  text: string;
+  targetKeywords: string; 
+}
+
+export interface OptimizeSeoTextOutput {
+  seoScore: number; // 0-100
+  suggestions: string; // Markdown formatted suggestions
+  // optimizedText: string; // Potentially, if the AI directly modifies text
+}

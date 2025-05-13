@@ -1,27 +1,147 @@
 // src/app/(app)/demo/ai-agent/page.tsx
 "use client";
 
-import { Bot } from "lucide-react"; // Using Bot icon as a placeholder
+import { useState, FormEvent } from "react";
+import { Briefcase, Zap, FileText, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AIAgentDemoPage() {
+  const [companyInput, setCompanyInput] = useState("");
+  const [analysisReport, setAnalysisReport] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleAnalyzeCompany = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!companyInput.trim()) {
+      toast({
+        title: "Input Required",
+        description: "Please enter a company name or website URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setAnalysisReport(null);
+
+    try {
+      const response = await fetch('/api/ai-agent-handler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ company_input: companyInput }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `API request failed with status ${response.status}`);
+      }
+
+      setAnalysisReport(data.report);
+      toast({
+        title: "Analysis Complete",
+        description: `Report generated for ${companyInput}.`,
+      });
+
+    } catch (err: any) {
+      console.error("Error generating company analysis:", err);
+      setError(err.message || "An unexpected error occurred while generating the report.");
+      toast({
+        title: "Analysis Failed",
+        description: err.message || "Could not generate the report.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6">
-      <div className="flex flex-col items-center text-center mb-12">
-        <Bot className="h-16 w-16 mb-6 text-primary" />
+    <div className="container mx-auto py-10 px-4 md:px-6 flex flex-col gap-8">
+      <div className="flex flex-col items-center text-center">
+        <Briefcase className="h-16 w-16 mb-6 text-primary" />
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-4">
-          AI Agent Demo
+          AI Business Intelligence Analyst
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
-          Welcome to the AI Agent demonstration page. Interactive agent functionalities will be showcased here.
+        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+          Enter a company name or website URL. The AI agent will generate a competitive intelligence report, including a SWOT analysis.
         </p>
       </div>
 
-      <div className="bg-card p-8 rounded-lg shadow-xl border border-border">
-        <h2 className="text-2xl font-semibold mb-4 text-center">AI Agent Interaction Zone</h2>
-        <p className="text-muted-foreground text-center">
-          (Placeholder for AI Agent components and interaction elements)
-        </p>
-      </div>
+      <Card className="shadow-xl border-border w-full max-w-3xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-6 w-6 text-primary" />
+            Company Analysis Input
+          </CardTitle>
+          <CardDescription>Provide a company name or its website URL for analysis.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleAnalyzeCompany} className="flex flex-col sm:flex-row gap-3">
+            <Input
+              type="text"
+              value={companyInput}
+              onChange={(e) => setCompanyInput(e.target.value)}
+              placeholder="e.g., 'Google' or 'https://apple.com'"
+              className="flex-grow"
+              disabled={isLoading}
+            />
+            <Button type="submit" disabled={isLoading || !companyInput.trim()} className="sm:w-auto w-full">
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                "Analyze Company"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {error && (
+        <Card className="shadow-lg border-destructive bg-destructive/10 w-full max-w-3xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle className="h-6 w-6" />
+              Error Generating Report
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-destructive-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {analysisReport && !error && (
+        <Card className="shadow-xl border-border w-full max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              Competitive Intelligence Report
+            </CardTitle>
+            <CardDescription>Generated by the AI Business Intelligence Analyst for: <strong>{companyInput}</strong></CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[600px] border rounded-md p-4 bg-muted/20">
+              {/* Using 'prose' and 'dark:prose-invert' for basic markdown-like styling */}
+              <div className="prose dark:prose-invert max-w-none">
+                <pre className="whitespace-pre-wrap font-sans text-sm">{analysisReport}</pre>
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

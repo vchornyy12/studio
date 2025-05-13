@@ -33,44 +33,7 @@ Perform the following tasks. If you are given a URL, use your knowledge to analy
 
 3.  **Generate Report**:
     Output the information as a clean, concise, business-friendly report. Use markdown formatting with clear headings (e.g., \`### Section Title\`), sub-headings (e.g. \`#### Sub-section Title\`), bullet points, and bold text for emphasis.
-
-Use the following EXACT structure for the report:
-
-🔍 Company: [Company Name derived from input]
-🌐 Website: [URL if provided, otherwise "Information not readily available"]
-
-📝 Overview:
-...
-
-📦 Products / Services:
-...
-
-🎯 Target Audience:
-...
-
-💡 Value Proposition:
-...
-
-💰 Pricing:
-...
-
-✅ Unique Selling Points:
-...
-
-🎨 Design / UX Observations:
-...
-
-📢 CTAs:
-...
-
-📊 SWOT Analysis:
-- Strengths:
-- Weaknesses:
-- Opportunities:
-- Threats:
-
-Ensure the report is well-structured and easy to read. Start the report with a main title like:
-## Competitive Intelligence Report: [Company Name derived from input]`;
+`;
 
 export async function POST(request: Request) {
   try {
@@ -89,7 +52,7 @@ export async function POST(request: Request) {
     }
 
     const chatCompletion = await client.chat.completions.create({
-        model: "google/gemini-2.5-pro-preview-05-06", // Using a capable model for complex analysis
+        model: "mistralai/Mistral-7B-Instruct-v0.2", // Using a capable model for complex analysis
         messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userContent }

@@ -58,8 +58,8 @@ export function ServicesSection() {
                   {service.description}
                 </CardDescription>
                 {service.href && (
-                  <Button asChild variant="outline" size="sm" className="mt-auto w-full group">
-                    <Link href={service.href}>
+                  <Button asChild size="sm" className="mt-auto w-full group transform transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-muted">
+                    <Link href={service.href} className="bg-gradient-to-r from-primary to-primary/70 text-transparent bg-clip-text">
                       Learn More <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </Button>

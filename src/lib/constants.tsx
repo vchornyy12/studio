@@ -49,6 +49,7 @@ export const HEADER_NAV_LINKS: NavItem[] = [
     dropdown: [
       { label: "SEO Tool", href: "/seo-tool", matchPaths: ["/seo-tool"], icon: FileText },
       { label: "AI Assistant", href: "/demo/ai-assistant", matchPaths: ["/demo/ai-assistant"], icon: Bot },
+      { label: "AI Agent", href: "/demo/ai-agent", matchPaths: ["/demo/ai-agent"], icon: Bot },
     ],
   },
   { label: "Blog", href: "/blog", matchPaths: ["/blog", "/blog/[slug]"] },

@@ -1,7 +1,7 @@
 // src/app/(app)/demo/ai-assistant/page.tsx
 "use client";
 
-import { Bot } from "lucide-react";
+import { Sparkles } from "lucide-react"; // Changed from Bot to Sparkles
 import Script from "next/script";
 import { useEffect, useState, useRef } from "react";
 
@@ -38,7 +38,7 @@ export default function AIAssistantDemoPage() {
     <div className="container mx-auto px-4 py-12 md:px-6 md:py-16 animate-fade-in">
       <header className="mb-8 md:mb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent flex items-center justify-center">
-          <Bot className="h-10 w-10 mr-4 text-primary" />
+          <Sparkles className="h-10 w-10 mr-4 text-primary" /> {/* Changed from Bot to Sparkles */}
           AI Assistant Demo
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">

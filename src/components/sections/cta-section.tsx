@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mail, Phone, Send, Smartphone } from "lucide-react"; 
-import { SITE_NAME, CONTACT_EMAIL } from "@/lib/constants"; 
+import { Mail, Phone, Send, Smartphone } from "lucide-react";
+import { SITE_NAME, CONTACT_EMAIL } from "@/lib/constants";
 
 export function CtaSection() {
   const { toast } = useToast();
@@ -16,14 +16,37 @@ export function CtaSection() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("name");
-    console.log("Form submitted:", { name, email: formData.get("email"), message: formData.get("message") });
-    toast({
-      title: "Message Sent!",
-      description: `Thank you, ${name || 'friend'}! We'll be in touch shortly.`,
-      variant: "default",
-    });
-    (event.target as HTMLFormElement).reset();
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const name = formData.get("name");
+        toast({
+          title: "Message Sent!",
+          description: `Thank you, ${name || "friend"}! We'll be in touch shortly.`, 
+          variant: "default",
+        });
+        (event.target as HTMLFormElement).reset();
+      } else {
+        console.error("Failed to send email", response.status);
+        toast({
+          title: "Error",
+          description: "Failed to send your message. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending email", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -35,26 +58,29 @@ export function CtaSection() {
               Ready to Transform Your Business?
             </h2>
             <p className="text-lg text-muted-foreground">
-              {`Let's discuss how ${SITE_NAME} can help you leverage artificial intelligence for unparalleled growth and efficiency. Reach out to us today for a personalized consultation.`} 
+              {`Let's discuss how ${SITE_NAME} can help you leverage artificial intelligence for unparalleled growth and efficiency. Reach out to us today for a personalized consultation.`}
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3 group">
                 <Mail className="h-6 w-6 text-primary group-hover:animate-pulse-bright" />
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{CONTACT_EMAIL}</a> 
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{CONTACT_EMAIL}</a>
               </div>
               <div className="flex items-center gap-3 group">
                 <Phone className="h-6 w-6 text-primary group-hover:animate-pulse-bright" />
                 <a href="tel:+1234567890" className="text-lg text-muted-foreground hover:text-primary transition-colors">+1 (234) 567-890</a>
               </div>
             </div>
-             <div className="mt-8">
-                <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 text-transparent bg-clip-text mb-3">Visit Us</h3>
-                <p className="text-muted-foreground">
-                    {`${SITE_NAME} Headquarters`}<br /> 
-                    123 Innovation Drive<br />
-                    Tech City, TX 75001<br />
-                    United States
-                </p>
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 text-transparent bg-clip-text mb-3">Visit Us</h3>
+              <p className="text-muted-foreground">
+                {`${SITE_NAME} Headquarters`}
+                <br />
+                123 Innovation Drive
+                <br />
+                Tech City, TX 75001
+                <br />
+                United States
+              </p>
             </div>
           </div>
 
@@ -81,18 +107,31 @@ export function CtaSection() {
                   <Label htmlFor="message" className="text-sm font-medium">Message</Label>
                   <Textarea id="message" name="message" rows={4} required className="mt-1 focus:ring-2 focus:ring-accent" placeholder="How can we help you?" />
                 </div>
-                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-base py-3 transition-transform hover:scale-105 active:scale-95">
+                <Button
+                  type="submit"
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-base py-3 transition-transform hover:scale-105 active:scale-95"
+                >
                   Send Message
                 </Button>
               </form>
               <div className="mt-6 pt-6 border-t">
                 <h4 className="text-sm font-medium text-center bg-gradient-to-r from-muted-foreground to-muted-foreground/70 text-transparent bg-clip-text mb-4">Or connect with us directly:</h4>
                 <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
-                  <a href="https://t.me/Vovachornyi" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50">
+                  <a
+                    href="https://t.me/Vovachornyi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50"
+                  >
                     <Send className="h-4 w-4" />
                     Telegram
                   </a>
-                  <a href="https://wa.me/48889906053" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50">
+                  <a
+                    href="https://wa.me/48889906053"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-3 border rounded-md hover:border-primary/50"
+                  >
                     <Smartphone className="h-4 w-4" />
                     WhatsApp
                   </a>

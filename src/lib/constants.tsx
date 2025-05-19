@@ -4,7 +4,7 @@
 export const SITE_NAME = "AI Solutions";
 export const SITE_DESCRIPTION = "Empowering businesses with cutting-edge AI solutions for a smarter future.";
 export const SITE_URL = "https://aisolutions.com";
-export const CONTACT_EMAIL = "contact@aisolutions.com";
+export const CONTACT_EMAIL = "vchornyy12@gmail.com";
 export const BRAND_LOGO_PATH = "/logo.svg"; 
 
 // SEO and Metadata

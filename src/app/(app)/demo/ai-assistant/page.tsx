@@ -23,15 +23,15 @@ export default function AIAssistantDemoPage() {
       // }
     }
 
-    return () => {
-      // Cleanup when the component unmounts
-      if (chatFormDiv) {
-        console.log("AI Assistant Demo Page: Cleaning up #chat_form div content on unmount.");
-        // Clearing innerHTML is a common way to deal with third-party scripts
-        // that might not clean up after themselves properly.
-        chatFormDiv.innerHTML = "";
-      }
-    };
+    // return () => {
+    //   // Cleanup when the component unmounts
+    //   if (chatFormDiv) {
+    //     console.log("AI Assistant Demo Page: Cleaning up #chat_form div content on unmount.");
+    //     // Clearing innerHTML is a common way to deal with third-party scripts
+    //     // that might not clean up after themselves properly.
+    //     chatFormDiv.innerHTML = "";
+    //   }
+    // };
   }, [scriptLoaded]); // Re-run if scriptLoaded state changes.
 
   return (
@@ -53,7 +53,7 @@ export default function AIAssistantDemoPage() {
 
       <Script
         src="https://app.aminos.ai/js/chat_form_plugin.js"
-        strategy="afterInteractive" 
+        strategy="beforeInteractive" 
         data-bot-id="45238"
         onLoad={() => {
           console.log('AI Assistant Demo Page: Aminos AI chat script has loaded (onLoad fired).');

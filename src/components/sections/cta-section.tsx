@@ -67,19 +67,19 @@ export function CtaSection() {
               </div>
               <div className="flex items-center gap-3 group">
                 <Phone className="h-6 w-6 text-primary group-hover:animate-pulse-bright" />
-                <a href="tel:+1234567890" className="text-lg text-muted-foreground hover:text-primary transition-colors">+1 (234) 567-890</a>
+                <a href="tel:+48889906053" className="text-lg text-muted-foreground hover:text-primary transition-colors">+48 (889) 906-053</a>
               </div>
             </div>
             <div className="mt-8">
-              <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 text-transparent bg-clip-text mb-3">Visit Us</h3>
+              <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 text-transparent bg-clip-text mb-3">We open to your Ideas</h3>
               <p className="text-muted-foreground">
-                {`${SITE_NAME} Headquarters`}
+                {`${SITE_NAME}`}
                 <br />
-                123 Innovation Drive
+                Please contact us - we help you to save money and time using AI tools.
                 <br />
-                Tech City, TX 75001
+                Let's begin from one small piece of work!
                 <br />
-                United States
+                Fill-in the contact form or write directly!
               </p>
             </div>
           </div>

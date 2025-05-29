@@ -18,7 +18,7 @@ export async function sendContactFormEmail({
   try {
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev', // Replace with your verified Resend sender email
-      to: 'your-receiving-email@example.com', // Replace with the email you want to receive messages
+      to: 'vchornyy12@gmail.com', // Replace with the email you want to receive messages
       subject: `New Contact Form Submission from ${name || 'Anonymous'}`,
       html: `
         <h2>New Contact Form Submission</h2>

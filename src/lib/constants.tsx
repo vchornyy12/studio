@@ -1,10 +1,10 @@
 // src/lib/constants.tsx
 
 // General Site Information
-export const SITE_NAME = "AI Solutions";
+export const SITE_NAME = "Devtogether AI";
 export const SITE_DESCRIPTION = "Empowering businesses with cutting-edge AI solutions for a smarter future.";
-export const SITE_URL = "https://aisolutions.com";
-export const CONTACT_EMAIL = "vchornyy12@gmail.com";
+export const SITE_URL = "https://devtogether.eu";
+export const CONTACT_EMAIL = "info@devtogether.eu";
 export const BRAND_LOGO_PATH = "/logo.svg"; 
 
 // SEO and Metadata

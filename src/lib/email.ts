@@ -13,8 +13,8 @@ interface SendContactEmailParams {
 
 export async function sendContactFormEmail({ name, email, company, message }: SendContactEmailParams) {
   const emailContent = {
-    "From": "info@devtogether.eu", // Replace with your From email
-    "To": "info@devtogether.eu", // Replace with your To email
+    "From": "onboarding@resend.dev", // Replace with your From email
+    "To": "vchornyy12@gmail.com", // Replace with your To email
     "Subject": `New Contact Form Submission from ${name || 'Visitor'}`,
     "HtmlBody": `<strong>Name:</strong> ${name}<br>
                  <strong>Email:</strong> ${email}<br>

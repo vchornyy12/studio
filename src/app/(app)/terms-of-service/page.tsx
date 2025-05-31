@@ -15,7 +15,7 @@ export default function TermsOfServicePage() {
       <p className="mt-4">This policy also sets forth your privacy rights and explains how to get in touch with us if needed.</p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-4">Who are we?</h2>
-      <p>Private Entrepreneur (hereinafter “we,” “us,” “our,” or “Devtogether”) has created this website to communicate with casual visitors, potential clients, and companies interested in our services as well as to provide information about Devtogether and the IT outsourcing industry. We welcome visitors to casually view information on our website and to use the site to directly communicate with Binariks.</p>
+      <p>Private Entrepreneur (hereinafter “we,” “us,” “our,” or “Devtogether”) has created this website to communicate with casual visitors, potential clients, and companies interested in our services as well as to provide information about Devtogether and the IT outsourcing industry. We welcome visitors to casually view information on our website and to use the site to directly communicate with Devtogether.</p>
       <p className="mt-4">We control all personal data processed in accordance with this policy.</p>
       <p className="mt-4">By visiting this website, you accept our Privacy Policy and agree that we may collect personal data during your website visit. If you disagree with this Privacy Policy, please feel free to leave the website.</p>
       <p className="mt-4">This website is not intended to offer any services directly to children. We do not knowingly collect information from children. However, if you are under the age of 16 and want to get in touch with us, please, send us a written consent from your parents or guardians to process your personal information.</p>
@@ -122,7 +122,7 @@ export default function TermsOfServicePage() {
       <p className="mt-4">Also, we may disclose your personal data to other third parties mentioned in this Privacy Policy</p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-4">Retention period</h2>
-      <p>Devtogether keeps personal data of job applicants until the vacancy is closed (not more than two (2) years). In case of candidature rejection, your personal data may be kept during the next one (1) year provided you give a separate consent and Binariks considers you as a potential candidate for other vacancies</p>
+      <p>Devtogether keeps personal data of job applicants until the vacancy is closed (not more than two (2) years). In case of candidature rejection, your personal data may be kept during the next one (1) year provided you give a separate consent and Devtogether considers you as a potential candidate for other vacancies</p>
 
       <h2 className="text-2xl font-semibold mt-8 mb-4">Cookies</h2>
       <p>As is general practice, our website uses cookies to collect data and provide visitors with a more user-friendly browsing experience.</p>

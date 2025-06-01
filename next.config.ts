@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'http', // Allow both http
+        hostname: '**',    // Wildcard for any hostname
+      },
+      {
+        protocol: 'https', // and https
+        hostname: '**',    // Wildcard for any hostname
+      },
     ],
   },
 };

@@ -13,6 +13,7 @@ export default function HomePage() {
       <AboutSection />
       <TestimonialsSection />
       <CtaSection />
+      <script src="https://app.aminos.ai/js/chat_plugin.js" data-bot-id="45644"></script>
     </>
   );
 }

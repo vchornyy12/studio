@@ -42,7 +42,10 @@ export default function AIAssistantDemoPage() {
           AI Assistant Demo
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Interact with our AI Assistant demo below. {!scriptLoaded && "(Loading chat...)"}
+          Interact with our AI Assistant demo below. Her role - Warsaw Zoo customer representative. 
+          Gpt-4o OpenAI based, Trained directly from ther site, Maximum Characters = 500,000 (99,700 used).
+          Can be integrated in any site. Stores sessions (chats) in google sheets (or any other places). 
+          Our AI Sales Manager Sofia is real working example to sale services & gather leads. 
         </p>
       </header>
 
